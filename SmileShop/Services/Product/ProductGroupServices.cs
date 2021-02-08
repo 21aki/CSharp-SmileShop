@@ -180,7 +180,7 @@ namespace SmileShop.Services
                 return ResponseResult.Failure<ProductGroupDTO>("No Product Group in this query");
 
             // Set data
-            _mapper.Map(data, addProduct);
+            _mapper.Map(addProduct, data);
             _dbContext.ProductGroup.Update(data);
             await _dbContext.SaveChangesAsync();
 

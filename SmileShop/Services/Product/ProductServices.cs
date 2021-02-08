@@ -163,7 +163,7 @@ namespace SmileShop.Services
                 return ResponseResult.Failure<ProductDTO>("No Product in this query");
 
             // Set data
-            _mapper.Map(data, editProduct);
+            _mapper.Map(editProduct, data);
             _dbContext.Product.Update(data);
             await _dbContext.SaveChangesAsync();
 

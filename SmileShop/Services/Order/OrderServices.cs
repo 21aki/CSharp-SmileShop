@@ -25,7 +25,7 @@ namespace SmileShop.Services
             _httpContext = httpContext;
         }
 
-        public async Task<ServiceResponseWithPagination<List<OrderDTO>>> GetAll(PaginationDto pagination = null, OrderFilterDTO OrderFilter = null, DataOrderDTO ordering = null)
+        public async Task<ServiceResponseWithPagination<List<OrderOnlyDTO>>> GetAll(PaginationDto pagination = null, OrderFilterDTO OrderFilter = null, DataOrderDTO ordering = null)
         {
 
             // Quering data
@@ -69,16 +69,16 @@ namespace SmileShop.Services
 
             // Return error if count is 0
             if (result.Count == 0)
-                return ResponseResultWithPagination.Failure<List<OrderDTO>>("No Product in this query");
+                return ResponseResultWithPagination.Failure<List<OrderOnlyDTO>>("No Product in this query");
 
             // Mapping
-            var dto = _mapper.Map<List<OrderDTO>>(result);
+            var dto = _mapper.Map<List<OrderOnlyDTO>>(result);
 
             // Return Results
-            return ResponseResultWithPagination.Success<List<OrderDTO>>(dto, paginationResult);
+            return ResponseResultWithPagination.Success<List<OrderOnlyDTO>>(dto, paginationResult);
         }
     
-        public async Task<ServiceResponse<OrderDTO>> Get(int OrderId)
+        public async Task<ServiceResponse<OrderOnlyDTO>> Get(int OrderId)
         {
 
             // Quering data

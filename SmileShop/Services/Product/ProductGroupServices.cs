@@ -45,7 +45,7 @@ namespace SmileShop.Services
 
 
             // Filtering data
-            if (!(productGroupfilter is null))
+            if (!(String.IsNullOrEmpty(productGroupfilter)))
             {
                 query = query.Where(x => x.Name.Contains(productGroupfilter));
             }

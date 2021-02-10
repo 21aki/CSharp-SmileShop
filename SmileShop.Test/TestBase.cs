@@ -5,6 +5,7 @@ using SmileShop.Data;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json;
 
 namespace SmileShop.Test
 {
@@ -36,6 +37,19 @@ namespace SmileShop.Test
             });
 
             return config.CreateMapper();
+        }
+
+        protected string ClassToJsonString(object obj)
+        {
+
+            var options = new JsonSerializerOptions()
+            {
+                WriteIndented = true
+            };
+
+            var jsonString = JsonSerializer.Serialize(obj, options);
+
+            return jsonString;
         }
 
     }

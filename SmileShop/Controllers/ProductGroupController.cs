@@ -23,15 +23,17 @@ namespace SmileShop.Controllers
         }
 
         [HttpGet("groups")]
-        public async Task<IActionResult> GetAll([FromQuery] int? Page, [FromQuery] PaginationDto pagination, [FromQuery] string filter = null, [FromQuery] DataOrderDTO ordering = null)
+        public async Task<IActionResult> GetAll([FromQuery] PaginationDto pagination, [FromQuery] string filter = null, [FromQuery] DataOrderDTO ordering = null)
         {
 
-            if (!(Page is null))
-            {
-                var paginationResult = await _ProductGroupService.GetAll(pagination, filter, ordering);
-                return Ok(paginationResult);
-            }
+            var paginationResult = await _ProductGroupService.GetAll(pagination, filter, ordering);
+            return Ok(paginationResult);
 
+        }
+
+        [HttpGet("groups/list")]
+        public async Task<IActionResult> GetList([FromQuery] string filter)
+        {
             var result = await _ProductGroupService.GetAll(filter);
             return Ok(result);
         }

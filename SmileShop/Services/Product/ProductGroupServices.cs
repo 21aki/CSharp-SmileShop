@@ -96,10 +96,12 @@ namespace SmileShop.Services
 
 
             // Filtering data
-            if (!String.IsNullOrEmpty(productGroupfilter))
+            if (String.IsNullOrEmpty(productGroupfilter))
             {
-                query = query.Where(x => x.Name.Contains(productGroupfilter));
+                return ResponseResult.Failure<List<ProductGroupDTO>>("This query must provided filter");
             }
+
+            query = query.Where(x => x.Name.Contains(productGroupfilter));
 
             // Generate result
             var result = await query.Include(entity => entity.CreatedByUser).ToListAsync();

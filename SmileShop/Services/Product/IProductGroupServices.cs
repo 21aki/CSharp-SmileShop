@@ -34,7 +34,7 @@ namespace SmileShop.Services
         /// <summary>
         /// To read GroupProduct as lists without Pagination and able to search by Name
         /// </summary>
-        Task<ServiceResponse<List<ProductGroupDTO>>> GetAll(string productGroupfilter);
+        Task<ServiceResponse<List<ProductGroupDTO>>> GetList(string productGroupfilter);
         /// <summary>
         /// To read individual GroupProduct
         /// </summary>
@@ -43,12 +43,12 @@ namespace SmileShop.Services
         /// <summary>
         /// To create individual GroupProduct
         /// </summary>
-        Task<ServiceResponse<ProductGroupDTO>> Add(ProductGroupAddDTO addProduct);
+        Task<ServiceResponse<ProductGroupDTO>> Add(ProductGroupAddDTO addProductGroup);
 
         /// <summary>
         /// To edit individual GroupProduct
         /// </summary>
-        Task<ServiceResponse<ProductGroupDTO>> Edit(int productGroupId, ProductGroupAddDTO addProduct);
+        Task<ServiceResponse<ProductGroupDTO>> Edit(int productGroupId, ProductGroupAddDTO addProductGroup);
 
         /// <summary>
         /// To delete individual GroupProduct

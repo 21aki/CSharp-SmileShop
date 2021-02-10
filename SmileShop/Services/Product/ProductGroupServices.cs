@@ -89,7 +89,7 @@ namespace SmileShop.Services
             return ResponseResultWithPagination.Success<List<ProductGroupDTO>>(dto, paginationResult);
         }
 
-        public async Task<ServiceResponse<List<ProductGroupDTO>>> GetAll(string productGroupfilter)
+        public async Task<ServiceResponse<List<ProductGroupDTO>>> GetList(string productGroupfilter)
         {
             // Quering data
             var query = _dbContext.ProductGroup.AsQueryable();
@@ -139,14 +139,14 @@ namespace SmileShop.Services
 
         }
 
-        public async Task<ServiceResponse<ProductGroupDTO>> Add(ProductGroupAddDTO addProduct)
+        public async Task<ServiceResponse<ProductGroupDTO>> Add(ProductGroupAddDTO addProductGroup)
         {
             // User must be presented to perform this method
             if (String.IsNullOrEmpty(GetUserId()))
                 return ResponseResult.Failure<ProductGroupDTO>("User must be presented to perform this method");
 
             // Create & set data
-            ProductGroup productGroup = _mapper.Map<ProductGroup>(addProduct);
+            ProductGroup productGroup = _mapper.Map<ProductGroup>(addProductGroup);
 
             productGroup.CreatedByUserId = Guid.Parse(GetUserId());
             productGroup.CreatedDate = Now();
@@ -166,7 +166,7 @@ namespace SmileShop.Services
             return ResponseResult.Success<ProductGroupDTO>(dto);
         }
 
-        public async Task<ServiceResponse<ProductGroupDTO>> Edit(int productGroupId, ProductGroupAddDTO addProduct)
+        public async Task<ServiceResponse<ProductGroupDTO>> Edit(int productGroupId, ProductGroupAddDTO addProductGroup)
         {
 
             // Id must be greater than 0
@@ -183,7 +183,7 @@ namespace SmileShop.Services
                 return ResponseResult.Failure<ProductGroupDTO>("No Product Group in this query");
 
             // Set data
-            _mapper.Map(addProduct, data);
+            _mapper.Map(addProductGroup, data);
             _dbContext.ProductGroup.Update(data);
             await _dbContext.SaveChangesAsync();
 

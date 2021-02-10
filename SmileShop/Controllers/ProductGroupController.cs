@@ -34,7 +34,7 @@ namespace SmileShop.Controllers
         [HttpGet("groups/list")]
         public async Task<IActionResult> GetList([FromQuery] string filter)
         {
-            var result = await _ProductGroupService.GetAll(filter);
+            var result = await _ProductGroupService.GetList(filter);
             return Ok(result);
         }
 

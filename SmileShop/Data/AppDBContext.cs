@@ -52,7 +52,7 @@ namespace SmileShop.Data
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Product_ProductGroup");
 
-                entity.HasOne(d => d.CreatedByUser_)
+                entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.Products)
                     .HasForeignKey(d => d.CreatedByUserId)
                     .HasConstraintName("FK_Product_User");
@@ -61,7 +61,7 @@ namespace SmileShop.Data
             modelBuilder.Entity<ProductGroup>(entity =>
             {
 
-                entity.HasOne(d => d.CreatedByUser_)
+                entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.ProductGroups)
                     .HasForeignKey(d => d.CreatedByUserId)
                     .HasConstraintName("FK_ProductGroup_User");

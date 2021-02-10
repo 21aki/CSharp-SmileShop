@@ -76,7 +76,7 @@ namespace SmileShop.Services
             var paginationResult = await _httpContext.HttpContext.InsertPaginationParametersInResponse(query, pagination.RecordsPerPage, pagination.Page);
 
             // Generate result
-            var result = await query.Paginate(pagination).Include(entity => entity.CreatedByUser_).ToListAsync();
+            var result = await query.Paginate(pagination).Include(entity => entity.CreatedByUser).ToListAsync();
 
             // Return error if count is 0
             if (result.Count == 0)
@@ -102,7 +102,7 @@ namespace SmileShop.Services
             }
 
             // Generate result
-            var result = await query.Include(entity => entity.CreatedByUser_).ToListAsync();
+            var result = await query.Include(entity => entity.CreatedByUser).ToListAsync();
 
             // Return error if count is 0
             if (result.Count == 0)
@@ -123,7 +123,7 @@ namespace SmileShop.Services
 
             // Gettering data
             var data = await _dbContext.ProductGroup
-                                       .Include(entity => entity.CreatedByUser_)
+                                       .Include(entity => entity.CreatedByUser)
                                        .Where(x => x.Id == productGroupId)
                                        .FirstAsync();
 
@@ -143,12 +143,10 @@ namespace SmileShop.Services
             if (String.IsNullOrEmpty(GetUserId()))
                 return ResponseResult.Failure<ProductGroupDTO>("User must be presented to perform this method");
 
-            var currentUser = await _dbContext.Users.FindAsync(Guid.Parse(GetUserId()));
-
             // Create & set data
             ProductGroup productGroup = _mapper.Map<ProductGroup>(addProduct);
 
-            productGroup.CreatedByUser_ = currentUser;
+            productGroup.CreatedByUserId = Guid.Parse(GetUserId());
             productGroup.CreatedDate = Now();
             productGroup.Status = false;
 
@@ -158,6 +156,9 @@ namespace SmileShop.Services
 
             // Mapping
             var dto = _mapper.Map<ProductGroupDTO>(productGroup);
+
+            dto.CreatedBy.Id = GetUserId();
+            dto.CreatedBy.Username = GetUsername();
 
             // Return result
             return ResponseResult.Success<ProductGroupDTO>(dto);
@@ -172,7 +173,7 @@ namespace SmileShop.Services
 
             // Gettering data
             var data = await _dbContext.ProductGroup
-                                       .Include(entity => entity.CreatedByUser_)
+                                       .Include(entity => entity.CreatedByUser)
                                        .Where(x => x.Id == productGroupId)
                                        .FirstAsync();
             // If no data return error
@@ -201,7 +202,7 @@ namespace SmileShop.Services
 
             // Gettering data
             var data = await _dbContext.ProductGroup
-                                       .Include(entity => entity.CreatedByUser_)
+                                       .Include(entity => entity.CreatedByUser)
                                        .Where(x => x.Id == productGroupId)
                                        .FirstAsync();
 

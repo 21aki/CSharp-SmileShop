@@ -106,8 +106,6 @@ namespace SmileShop.Services
             if (String.IsNullOrEmpty(GetUserId()))
                 return ResponseResult.Failure<OrderDTO>("User must be presented to perform this method");
 
-            var currentUser = await _dbContext.Users.FindAsync(Guid.Parse(GetUserId()));
-
             if(addOrder.Discount > 1 || addOrder.Discount < 0)
                 return ResponseResult.Failure<OrderDTO>("Discount must be percentage range of 0.00 to 1.00");
 
@@ -116,6 +114,7 @@ namespace SmileShop.Services
             decimal orderTotal = 0;
             decimal orderNet = 0;
 
+            //For each OrderDetail check if Product is sufficient for distract from stocks.
             for (int i = 0; i < listOrderDetail.Count; i++)
             {
                 bool result = false;
@@ -124,6 +123,8 @@ namespace SmileShop.Services
                 (result, price) = await ProductIsSufficient(listOrderDetail.ElementAt(i).ProductId, listOrderDetail.ElementAt(i).Quantity);
                 if (!result)
                 {
+                    //Return fail if Produis insufficient
+                    //EF will not savechange.
                     return ResponseResult.Failure<OrderDTO>("Order has insufficient Items");
                 } 
                 else
@@ -140,7 +141,7 @@ namespace SmileShop.Services
             // Create & set data
             Order newOrder = _mapper.Map<Order>(addOrder);
 
-            newOrder.CreatedByUser = currentUser;
+            newOrder.CreatedByUserID = Guid.Parse(GetUserId());
             newOrder.CreatedDate = Now();
             newOrder.Total = orderTotal;
             newOrder.ItemCount = orderQuantity;
@@ -149,7 +150,12 @@ namespace SmileShop.Services
             await _dbContext.Order.AddAsync(newOrder);
             await _dbContext.SaveChangesAsync();
 
+            //Mapping
             var dto = _mapper.Map<OrderDTO>(newOrder);
+
+            //Add User Details
+            dto.CreatedBy.Id = GetUserId();
+            dto.CreatedBy.Username = GetUsername();
 
             return ResponseResult.Success<OrderDTO>(dto);
 
@@ -205,6 +211,10 @@ namespace SmileShop.Services
 
             if (product.Stock < amount)
                 return (false, 0);
+
+            // If Sufficient then decread number from stock and update
+            product.Stock = product.Stock - amount;
+            _dbContext.Product.Update(product);
 
             return (true, product.Price);
         }

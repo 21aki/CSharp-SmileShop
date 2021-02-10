@@ -11,6 +11,8 @@
     <Compile Remove="Migrations\20210206131342_SmileShop-Intitial.Designer.cs" />
     <Compile Remove="Migrations\20210206134634_SmileShop-Intitial.cs" />
     <Compile Remove="Migrations\20210206134634_SmileShop-Intitial.Designer.cs" />
+    <Compile Remove="Migrations\20210210021258_SmileShop-Rename-Propperty-2.cs" />
+    <Compile Remove="Migrations\20210210021258_SmileShop-Rename-Propperty-2.Designer.cs" />
   </ItemGroup>
 
   <!--<PropertyGroup>

@@ -225,7 +225,7 @@ namespace SmileShop.Migrations
 
             modelBuilder.Entity("SmileShop.Models.Product", b =>
                 {
-                    b.HasOne("SmileShop.Models.User", "CreatedByUser_")
+                    b.HasOne("SmileShop.Models.User", "CreatedByUser")
                         .WithMany("Products")
                         .HasForeignKey("CreatedByUserId")
                         .HasConstraintName("FK_Product_User")
@@ -241,7 +241,7 @@ namespace SmileShop.Migrations
 
             modelBuilder.Entity("SmileShop.Models.ProductGroup", b =>
                 {
-                    b.HasOne("SmileShop.Models.User", "CreatedByUser_")
+                    b.HasOne("SmileShop.Models.User", "CreatedByUser")
                         .WithMany("ProductGroups")
                         .HasForeignKey("CreatedByUserId")
                         .HasConstraintName("FK_ProductGroup_User")

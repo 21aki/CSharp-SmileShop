@@ -26,7 +26,7 @@ namespace SmileShop.Models
         public bool? Status { get; set; }
 
         public virtual ProductGroup Group_ { get; set; }
-        public virtual User CreatedByUser_ { get; set; }
+        public virtual User CreatedByUser { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
     }
 }

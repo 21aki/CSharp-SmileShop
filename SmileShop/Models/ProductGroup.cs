@@ -23,7 +23,7 @@ namespace SmileShop.Models
         public DateTime CreatedDate { get; set; }
         public bool Status { get; set; }
 
-        public User CreatedByUser_ { get; set; }
+        public User CreatedByUser { get; set; }
         public virtual ICollection<Product> Products { get; set; }
     }
 }

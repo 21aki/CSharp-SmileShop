@@ -59,7 +59,7 @@ namespace SmileShop.Services
             var paginationResult = await _httpContext.HttpContext.InsertPaginationParametersInResponse(query, pagination.RecordsPerPage, pagination.Page);
 
             // Generate result
-            var result = await query.Paginate(pagination).Include(entity => entity.CreatedByUser_).Include(entity => entity.Group_).ToListAsync();
+            var result = await query.Paginate(pagination).Include(entity => entity.CreatedByUser).Include(entity => entity.Group_).ToListAsync();
 
             // Return error if count is 0
             if (result.Count == 0)
@@ -82,7 +82,7 @@ namespace SmileShop.Services
             query = filter(query, productFilter);
 
             // Generate result
-            var result = await query.Include(entity => entity.CreatedByUser_).Include(entity => entity.Group_).ToListAsync();
+            var result = await query.Include(entity => entity.CreatedByUser).Include(entity => entity.Group_).ToListAsync();
 
             // Return error if count is 0
             if (result.Count == 0)
@@ -103,7 +103,7 @@ namespace SmileShop.Services
 
             // Gettering data
             var data = await _dbContext.Product
-                                        .Include(entity => entity.CreatedByUser_)
+                                        .Include(entity => entity.CreatedByUser)
                                         .Include(entity => entity.Group_)
                                         .Where(x => x.Id == productId)
                                         .FirstOrDefaultAsync();
@@ -122,8 +122,6 @@ namespace SmileShop.Services
             if (String.IsNullOrEmpty(GetUserId()))
                 return ResponseResult.Failure<ProductDTO>("User must be presented to perform this method");
 
-            var currentUser = await _dbContext.Users.FindAsync(Guid.Parse(GetUserId()));
-
             var productGroup = await _dbContext.ProductGroup.FindAsync(addProduct.GroupId);
 
             if(productGroup is null)
@@ -133,7 +131,7 @@ namespace SmileShop.Services
             Product product = _mapper.Map<Product>(addProduct);
 
             product.Group_ = productGroup;
-            product.CreatedByUser_ = currentUser;
+            product.CreatedByUserId = Guid.Parse(GetUserId());
             product.CreatedDate = Now();
             product.Status = false;
 
@@ -143,6 +141,10 @@ namespace SmileShop.Services
 
             // Mapping
             var dto = _mapper.Map<ProductDTO>(product);
+
+            // Add User Detail
+            dto.CreatedBy.Id = GetUserId();
+            dto.CreatedBy.Username = GetUsername();
 
             // Return result
             return ResponseResult.Success<ProductDTO>(dto);
@@ -157,7 +159,7 @@ namespace SmileShop.Services
 
             // Gettering data
             var data = await _dbContext.Product
-                                       .Include(entity => entity.CreatedByUser_)
+                                       .Include(entity => entity.CreatedByUser)
                                        .Include(entity => entity.Group_)
                                        .Where(x => x.Id == productId)
                                        .FirstAsync();
@@ -186,7 +188,7 @@ namespace SmileShop.Services
 
             // Gettering data
             var data = await _dbContext.Product
-                                       .Include(entity => entity.CreatedByUser_)
+                                       .Include(entity => entity.CreatedByUser)
                                        .Include(entity => entity.Group_)
                                        .Where(x => x.Id == productId)
                                        .FirstAsync();

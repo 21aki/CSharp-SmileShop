@@ -29,7 +29,7 @@ namespace SmileShop.Services
 
 
         /// To read Order as lists with Pagination and able to search by Date
-        public Task<ServiceResponseWithPagination<List<OrderDTO>>> GetAll(PaginationDto pagination = null, OrderFilterDTO OrderFilter = null, DataOrderDTO ordering = null);
+        public Task<ServiceResponseWithPagination<List<OrderOnlyDTO>>> GetAll(PaginationDto pagination = null, OrderFilterDTO OrderFilter = null, DataOrderDTO ordering = null);
 
         /// To read individual Order with OrderDetails
         public Task<ServiceResponse<OrderDTO>> Get(int OrderId);

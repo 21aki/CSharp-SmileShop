@@ -40,7 +40,7 @@ namespace SmileShop.Services
 
                 if (columns.Exists(x => x == ordering.OrderBy))
                 {
-                    if (ordering.OrderBy == "CreatedBy") ordering.OrderBy = "CreatedByUser_.Username";
+                    if (ordering.OrderBy == "CreatedBy") ordering.OrderBy = "CreatedByUser.Username";
 
                     var property = $"{ordering.OrderBy}";
 
@@ -102,7 +102,11 @@ namespace SmileShop.Services
                 return ResponseResult.Failure<ProductDTO>("Id must be greater than 0");
 
             // Gettering data
-            var data = await _dbContext.Product.Include(entity => entity.CreatedByUser_).Include(entity => entity.Group_).Where(x => x.Id == productId).FirstAsync();
+            var data = await _dbContext.Product
+                                        .Include(entity => entity.CreatedByUser_)
+                                        .Include(entity => entity.Group_)
+                                        .Where(x => x.Id == productId)
+                                        .FirstOrDefaultAsync();
 
             // If no data return error
             if (data is null)

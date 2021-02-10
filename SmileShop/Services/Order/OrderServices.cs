@@ -42,7 +42,7 @@ namespace SmileShop.Services
 
                 if (columns.Exists(x => x == ordering.OrderBy))
                 {
-                    if (ordering.OrderBy == "CreatedBy") ordering.OrderBy = "CreatedByUser_.Username";
+                    if (ordering.OrderBy == "CreatedBy") ordering.OrderBy = "CreatedByUser.Username";
 
                     var property = $"{ordering.OrderBy}";
 
@@ -64,7 +64,7 @@ namespace SmileShop.Services
             // Generate result
             var result = await query.Paginate(pagination)
                                     .Include(entity => entity.OrderDetails)
-                                    .Include(entity => entity.CreatedByUser_)
+                                    .Include(entity => entity.CreatedByUser)
                                     .ToListAsync();
 
             // Return error if count is 0
@@ -78,13 +78,13 @@ namespace SmileShop.Services
             return ResponseResultWithPagination.Success<List<OrderOnlyDTO>>(dto, paginationResult);
         }
     
-        public async Task<ServiceResponse<OrderOnlyDTO>> Get(int OrderId)
+        public async Task<ServiceResponse<OrderDTO>> Get(int OrderId)
         {
 
             // Quering data
             var result = await _dbContext.Order
                                     .Include(o => o.OrderDetails)
-                                    .Include(o => o.CreatedByUser_)
+                                    .Include(o => o.CreatedByUser)
                                     .Where(o => o.Id == OrderId)
                                     .ToListAsync();
 
@@ -140,10 +140,10 @@ namespace SmileShop.Services
             // Create & set data
             Order newOrder = _mapper.Map<Order>(addOrder);
 
-            newOrder.CreatedByUser_ = currentUser;
+            newOrder.CreatedByUser = currentUser;
             newOrder.CreatedDate = Now();
             newOrder.Total = orderTotal;
-            newOrder.Itemcount = orderQuantity;
+            newOrder.ItemCount = orderQuantity;
             newOrder.Net = orderNet;
 
             await _dbContext.Order.AddAsync(newOrder);
@@ -208,5 +208,6 @@ namespace SmileShop.Services
 
             return (true, product.Price);
         }
+
     }
 }

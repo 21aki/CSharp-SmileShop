@@ -20,7 +20,7 @@ namespace SmileShop.Data
 
             modelBuilder.Entity<Order>(entity =>
             {
-                entity.HasOne(d => d.CreatedByUser_)
+                entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.CreatedByUserID)
                     .HasConstraintName("FK_Order_User");
@@ -61,9 +61,9 @@ namespace SmileShop.Data
             modelBuilder.Entity<ProductGroup>(entity =>
             {
 
-                entity.HasOne(d => d.CreatedUser_)
+                entity.HasOne(d => d.CreatedByUser_)
                     .WithMany(p => p.ProductGroups)
-                    .HasForeignKey(d => d.CreatedUserId)
+                    .HasForeignKey(d => d.CreatedByUserId)
                     .HasConstraintName("FK_ProductGroup_User");
             });
 

@@ -18,14 +18,14 @@ namespace SmileShop.Models
 
         [Required]
         public DateTime Date { get; set; }
-        public int Itemcount { get; set; }
+        public int ItemCount { get; set; }
         public decimal Total { get; set; }
         public decimal Discount { get; set; }
         public decimal Net { get; set; }
         public Guid CreatedByUserID { get; set; }
         public DateTime CreatedDate { get; set; }
 
-        public virtual User CreatedByUser_ { get; set; }
+        public virtual User CreatedByUser { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
     }
 }

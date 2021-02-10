@@ -57,7 +57,7 @@ namespace SmileShop.Services
 
                 if (columns.Exists(x => x == ordering.OrderBy))
                 {
-                    if (ordering.OrderBy == "CreatedBy") ordering.OrderBy = "CreatedByUser_.Username";
+                    if (ordering.OrderBy == "CreatedBy") ordering.OrderBy = "CreatedByUser.Username";
 
                     var property = $"{ordering.OrderBy}";
 
@@ -76,7 +76,7 @@ namespace SmileShop.Services
             var paginationResult = await _httpContext.HttpContext.InsertPaginationParametersInResponse(query, pagination.RecordsPerPage, pagination.Page);
 
             // Generate result
-            var result = await query.Paginate(pagination).Include(entity => entity.CreatedUser_).ToListAsync();
+            var result = await query.Paginate(pagination).Include(entity => entity.CreatedByUser_).ToListAsync();
 
             // Return error if count is 0
             if (result.Count == 0)
@@ -102,7 +102,7 @@ namespace SmileShop.Services
             }
 
             // Generate result
-            var result = await query.Include(entity => entity.CreatedUser_).ToListAsync();
+            var result = await query.Include(entity => entity.CreatedByUser_).ToListAsync();
 
             // Return error if count is 0
             if (result.Count == 0)
@@ -123,7 +123,7 @@ namespace SmileShop.Services
 
             // Gettering data
             var data = await _dbContext.ProductGroup
-                                       .Include(entity => entity.CreatedUser_)
+                                       .Include(entity => entity.CreatedByUser_)
                                        .Where(x => x.Id == productGroupId)
                                        .FirstAsync();
 
@@ -148,7 +148,7 @@ namespace SmileShop.Services
             // Create & set data
             ProductGroup productGroup = _mapper.Map<ProductGroup>(addProduct);
 
-            productGroup.CreatedUser_ = currentUser;
+            productGroup.CreatedByUser_ = currentUser;
             productGroup.CreatedDate = Now();
             productGroup.Status = false;
 
@@ -172,7 +172,7 @@ namespace SmileShop.Services
 
             // Gettering data
             var data = await _dbContext.ProductGroup
-                                       .Include(entity => entity.CreatedUser_)
+                                       .Include(entity => entity.CreatedByUser_)
                                        .Where(x => x.Id == productGroupId)
                                        .FirstAsync();
             // If no data return error
@@ -201,7 +201,7 @@ namespace SmileShop.Services
 
             // Gettering data
             var data = await _dbContext.ProductGroup
-                                       .Include(entity => entity.CreatedUser_)
+                                       .Include(entity => entity.CreatedByUser_)
                                        .Where(x => x.Id == productGroupId)
                                        .FirstAsync();
 

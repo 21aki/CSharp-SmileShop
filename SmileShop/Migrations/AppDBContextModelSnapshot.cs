@@ -38,7 +38,7 @@ namespace SmileShop.Migrations
                     b.Property<decimal>("Discount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("Itemcount")
+                    b.Property<int>("ItemCount")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Net")
@@ -120,23 +120,23 @@ namespace SmileShop.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatedUserId")
+                    b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
-                    b.Property<bool?>("Status")
+                    b.Property<bool>("Status")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedUserId");
+                    b.HasIndex("CreatedByUserId");
 
                     b.ToTable("ProductGroup");
                 });
@@ -198,7 +198,7 @@ namespace SmileShop.Migrations
 
             modelBuilder.Entity("SmileShop.Models.Order", b =>
                 {
-                    b.HasOne("SmileShop.Models.User", "CreatedByUser_")
+                    b.HasOne("SmileShop.Models.User", "CreatedByUser")
                         .WithMany("Orders")
                         .HasForeignKey("CreatedByUserID")
                         .HasConstraintName("FK_Order_User")
@@ -212,12 +212,14 @@ namespace SmileShop.Migrations
                         .WithMany("OrderDetails")
                         .HasForeignKey("OrderId")
                         .HasConstraintName("FK_OrderDetail_Order")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SmileShop.Models.Product", "Product_")
                         .WithMany("OrderDetails")
                         .HasForeignKey("ProductId")
                         .HasConstraintName("FK_OrderDetail_Product")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -239,10 +241,12 @@ namespace SmileShop.Migrations
 
             modelBuilder.Entity("SmileShop.Models.ProductGroup", b =>
                 {
-                    b.HasOne("SmileShop.Models.User", "CreatedUser_")
+                    b.HasOne("SmileShop.Models.User", "CreatedByUser_")
                         .WithMany("ProductGroups")
-                        .HasForeignKey("CreatedUserId")
-                        .HasConstraintName("FK_ProductGroup_User");
+                        .HasForeignKey("CreatedByUserId")
+                        .HasConstraintName("FK_ProductGroup_User")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("SmileShop.Models.UserRole", b =>

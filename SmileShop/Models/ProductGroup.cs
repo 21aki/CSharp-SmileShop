@@ -19,11 +19,11 @@ namespace SmileShop.Models
         [Required]
         [MaxLength(50)]
         public string Name { get; set; }
-        public Guid CreatedUserId { get; set; }
+        public Guid CreatedByUserId { get; set; }
         public DateTime CreatedDate { get; set; }
         public bool Status { get; set; }
 
-        public User CreatedUser_ { get; set; }
+        public User CreatedByUser_ { get; set; }
         public virtual ICollection<Product> Products { get; set; }
     }
 }

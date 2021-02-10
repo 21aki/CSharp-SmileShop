@@ -146,24 +146,24 @@ namespace SmileShop.Services
                 return ResponseResult.Failure<ProductGroupDTO>("User must be presented to perform this method");
 
             // Create & set data
-            ProductGroup productGroup = _mapper.Map<ProductGroup>(addProductGroup);
+            ProductGroup data = _mapper.Map<ProductGroup>(addProductGroup);
 
-            productGroup.CreatedByUserId = Guid.Parse(GetUserId());
-            productGroup.CreatedDate = Now();
-            productGroup.Status = false;
+            data.CreatedByUserId = Guid.Parse(GetUserId());
+            data.CreatedDate = Now();
+            data.Status = false;
 
             // Add data
-            await _dbContext.ProductGroup.AddAsync(productGroup);
+            await _dbContext.ProductGroup.AddAsync(data);
             await _dbContext.SaveChangesAsync();
 
             // Mapping
-            var dto = _mapper.Map<ProductGroupDTO>(productGroup);
+            var dto = _mapper.Map<ProductGroupDTO>(data);
 
             dto.CreatedBy.Id = GetUserId();
             dto.CreatedBy.Username = GetUsername();
 
             // Return result
-            return ResponseResult.Success<ProductGroupDTO>(dto);
+            return ResponseResult.Success<ProductGroupDTO>(dto, $"Product Group ({data.Name}) have been added successfully");
         }
 
         public async Task<ServiceResponse<ProductGroupDTO>> Edit(int productGroupId, ProductGroupAddDTO addProductGroup)
@@ -191,7 +191,7 @@ namespace SmileShop.Services
             var dto = _mapper.Map<ProductGroupDTO>(data);
 
             // Return result
-            return ResponseResult.Success<ProductGroupDTO>(dto);
+            return ResponseResult.Success<ProductGroupDTO>(dto, $"Product Group ({data.Name}) have been edited successfully");
 
         }
 
@@ -220,7 +220,7 @@ namespace SmileShop.Services
             var dto = _mapper.Map<ProductGroupDTO>(data);
 
             // Return result
-            return ResponseResult.Success<ProductGroupDTO>(dto);
+            return ResponseResult.Success<ProductGroupDTO>(dto, $"Product Group ({data.Name}) have been deleted successfully");
         }
     }
 }

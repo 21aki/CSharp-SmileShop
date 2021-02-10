@@ -49,5 +49,7 @@ namespace SmileShop.Test
             Assert.AreEqual(result.IsSuccess, false);
             Assert.AreEqual(result.Message, "No Product Group in this query");
         }
+
+
     }
 }

@@ -86,14 +86,14 @@ namespace SmileShop.Services
                                     .Include(o => o.OrderDetails)
                                     .Include(o => o.CreatedByUser)
                                     .Where(o => o.Id == OrderId)
-                                    .ToListAsync();
+                                    .FirstOrDefaultAsync();
 
             // Return error if count is 0
-            if (result.Count != 1)
+            if (result is null)
                 return ResponseResult.Failure<OrderDTO>("No Order in this query");
 
             // Mapping
-            var dto = _mapper.Map<OrderDTO>(result[0]);
+            var dto = _mapper.Map<OrderDTO>(result);
 
 
             // Return Results
@@ -171,7 +171,9 @@ namespace SmileShop.Services
             if (result is null)
                 return ResponseResult.Failure<OrderDTO>("No Order in this query");
 
-            var orderDetails = await _dbContext.OrderDetail.Where(od => od.OrderId == OrderId).ToListAsync();
+            var orderDetails = await _dbContext.OrderDetail
+                                               .Where(od => od.OrderId == OrderId)
+                                               .FirstOrDefaultAsync();
 
             _dbContext.OrderDetail.RemoveRange(orderDetails);
             await _dbContext.SaveChangesAsync();

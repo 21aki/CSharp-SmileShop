@@ -103,10 +103,10 @@ namespace SmileShop.Services
 
             // Gettering data
             var data = await _dbContext.Product
-                                        .Include(entity => entity.CreatedByUser)
-                                        .Include(entity => entity.Group_)
-                                        .Where(x => x.Id == productId)
-                                        .FirstOrDefaultAsync();
+                                       .Include(entity => entity.CreatedByUser)
+                                       .Include(entity => entity.Group_)
+                                       .Where(x => x.Id == productId)
+                                       .FirstOrDefaultAsync();
 
             // If no data return error
             if (data is null)
@@ -162,7 +162,7 @@ namespace SmileShop.Services
                                        .Include(entity => entity.CreatedByUser)
                                        .Include(entity => entity.Group_)
                                        .Where(x => x.Id == productId)
-                                       .FirstAsync();
+                                       .FirstOrDefaultAsync();
 
             // If no data return error
             if (data is null)
@@ -191,7 +191,7 @@ namespace SmileShop.Services
                                        .Include(entity => entity.CreatedByUser)
                                        .Include(entity => entity.Group_)
                                        .Where(x => x.Id == productId)
-                                       .FirstAsync();
+                                       .FirstOrDefaultAsync();
 
             // If no data return error
             if (data is null)

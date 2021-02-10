@@ -125,7 +125,7 @@ namespace SmileShop.Services
             var data = await _dbContext.ProductGroup
                                        .Include(entity => entity.CreatedByUser)
                                        .Where(x => x.Id == productGroupId)
-                                       .FirstAsync();
+                                       .FirstOrDefaultAsync();
 
             // If no data return error
             if (data is null)
@@ -175,7 +175,7 @@ namespace SmileShop.Services
             var data = await _dbContext.ProductGroup
                                        .Include(entity => entity.CreatedByUser)
                                        .Where(x => x.Id == productGroupId)
-                                       .FirstAsync();
+                                       .FirstOrDefaultAsync();
             // If no data return error
             if (data is null)
                 return ResponseResult.Failure<ProductGroupDTO>("No Product Group in this query");
@@ -204,7 +204,7 @@ namespace SmileShop.Services
             var data = await _dbContext.ProductGroup
                                        .Include(entity => entity.CreatedByUser)
                                        .Where(x => x.Id == productGroupId)
-                                       .FirstAsync();
+                                       .FirstOrDefaultAsync();
 
             // If no data return error
             if (data is null)

@@ -141,7 +141,7 @@ namespace SmileShop.Services
             // Create & set data
             Order newOrder = _mapper.Map<Order>(addOrder);
 
-            newOrder.CreatedByUserID = Guid.Parse(GetUserId());
+            newOrder.CreatedByUserId = Guid.Parse(GetUserId());
             newOrder.CreatedDate = Now();
             newOrder.Total = orderTotal;
             newOrder.ItemCount = orderQuantity;

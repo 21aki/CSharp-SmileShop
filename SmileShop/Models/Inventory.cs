@@ -6,25 +6,28 @@ using System.Threading.Tasks;
 
 namespace SmileShop.Models
 {
-    public class Order
+    public class Inventory
     {
-        public Order()
-        {
-            OrderDetails = new HashSet<OrderDetail>();
-        }
-        
         [Key]
         public int Id { get; set; }
 
+        public int ProductId { get; set; }
+
         [Required]
         public DateTime CreatedDate { get; set; }
-        public int ItemCount { get; set; }
-        public decimal Total { get; set; }
-        public decimal Discount { get; set; }
-        public decimal Net { get; set; }
+
+        public int Debit { get; set; }
+
+        public int Credit { get; set; }
+
+        //public decimal Price { get; set; }
+
+        public string Remark { get; set; }
+
         public Guid CreatedByUserId { get; set; }
 
+        public virtual Product Product_ { get; set; }
+
         public virtual User CreatedByUser { get; set; }
-        public virtual ICollection<OrderDetail> OrderDetails { get; set; }
     }
 }

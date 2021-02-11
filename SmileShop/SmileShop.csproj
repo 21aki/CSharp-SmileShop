@@ -13,6 +13,10 @@
     <Compile Remove="Migrations\20210206134634_SmileShop-Intitial.Designer.cs" />
     <Compile Remove="Migrations\20210210021258_SmileShop-Rename-Propperty-2.cs" />
     <Compile Remove="Migrations\20210210021258_SmileShop-Rename-Propperty-2.Designer.cs" />
+    <Compile Remove="Migrations\20210211055539_inventory-add-usercreated.cs" />
+    <Compile Remove="Migrations\20210211055539_inventory-add-usercreated.Designer.cs" />
+    <Compile Remove="Migrations\20210211055806_inventory-add-usercreated.cs" />
+    <Compile Remove="Migrations\20210211055806_inventory-add-usercreated.Designer.cs" />
   </ItemGroup>
 
   <!--<PropertyGroup>

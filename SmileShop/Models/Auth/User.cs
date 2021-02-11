@@ -29,9 +29,12 @@ namespace SmileShop.Models
         [Required]
         public byte[] PasswordSalt { get; set; }
 
+        public virtual ICollection<UserRole> UserRoles { get; set; }
+
         public virtual ICollection<Order> Orders { get; set; }
         public virtual ICollection<ProductGroup> ProductGroups { get; set; }
         public virtual ICollection<Product> Products { get; set; }
-        public virtual ICollection<UserRole> UserRoles { get; set; }
+        public virtual ICollection<Inventory> Inventory_ { get; set; }
+
     }
 }

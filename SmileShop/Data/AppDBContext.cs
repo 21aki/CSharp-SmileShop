@@ -22,7 +22,7 @@ namespace SmileShop.Data
             {
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.Orders)
-                    .HasForeignKey(d => d.CreatedByUserID)
+                    .HasForeignKey(d => d.CreatedByUserId)
                     .HasConstraintName("FK_Order_User");
             });
 
@@ -67,6 +67,24 @@ namespace SmileShop.Data
                     .HasConstraintName("FK_ProductGroup_User");
             });
 
+            modelBuilder.Entity<Inventory>(entity =>
+            {
+                entity.HasKey(e => new { e.Id });
+
+                entity.HasOne(d => d.Product_)
+                    .WithMany(p => p.Inventory_)
+                    .HasForeignKey(d => d.ProductId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_Inventory_Product");
+
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.Inventory_)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Inventory_User");
+            });
+
             base.OnModelCreating(modelBuilder);
         }
 
@@ -81,5 +99,6 @@ namespace SmileShop.Data
         public DbSet<OrderDetail> OrderDetail { get; set; }
         public DbSet<Product> Product { get; set; }
         public DbSet<ProductGroup> ProductGroup { get; set; }
+        public DbSet<Inventory> Inventory { get; set; }
     }
 }

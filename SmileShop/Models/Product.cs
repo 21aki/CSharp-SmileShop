@@ -11,6 +11,7 @@ namespace SmileShop.Models
         public Product()
         {
             OrderDetails = new HashSet<OrderDetail>();
+            Inventory_ = new HashSet<Inventory>();
         }
 
         public int Id { get; set; }
@@ -28,5 +29,7 @@ namespace SmileShop.Models
         public virtual ProductGroup Group_ { get; set; }
         public virtual User CreatedByUser { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
+        public virtual ICollection<Inventory> Inventory_ { get; set; }
+
     }
 }

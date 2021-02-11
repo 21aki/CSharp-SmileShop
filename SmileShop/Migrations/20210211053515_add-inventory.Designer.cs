@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmileShop.Data;
 
 namespace SmileShop.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20210211053515_add-inventory")]
+    partial class addinventory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,12 +27,6 @@ namespace SmileShop.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<int>("Credit")
                         .HasColumnType("int");
@@ -46,8 +42,6 @@ namespace SmileShop.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedByUserId");
-
                     b.HasIndex("ProductId");
 
                     b.ToTable("Inventory");
@@ -60,10 +54,13 @@ namespace SmileShop.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<Guid>("CreatedByUserId")
+                    b.Property<Guid>("CreatedByUserID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("Discount")
@@ -80,7 +77,7 @@ namespace SmileShop.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedByUserId");
+                    b.HasIndex("CreatedByUserID");
 
                     b.ToTable("Order");
                 });
@@ -92,9 +89,6 @@ namespace SmileShop.Migrations
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
-
-                    b.Property<decimal>("DiscountPrice")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
@@ -232,12 +226,6 @@ namespace SmileShop.Migrations
 
             modelBuilder.Entity("SmileShop.Models.Inventory", b =>
                 {
-                    b.HasOne("SmileShop.Models.User", "CreatedByUser")
-                        .WithMany("Inventory_")
-                        .HasForeignKey("CreatedByUserId")
-                        .HasConstraintName("FK_Inventory_User")
-                        .IsRequired();
-
                     b.HasOne("SmileShop.Models.Product", "Product_")
                         .WithMany("Inventory_")
                         .HasForeignKey("ProductId")
@@ -250,7 +238,7 @@ namespace SmileShop.Migrations
                 {
                     b.HasOne("SmileShop.Models.User", "CreatedByUser")
                         .WithMany("Orders")
-                        .HasForeignKey("CreatedByUserId")
+                        .HasForeignKey("CreatedByUserID")
                         .HasConstraintName("FK_Order_User")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

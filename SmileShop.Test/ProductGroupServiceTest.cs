@@ -203,7 +203,6 @@ namespace SmileShop.Test
             // context.Request.Headers["Tenant-ID"] = fakeTenantId;
             httpContext.Setup(_ => _.HttpContext).Returns(http);
             
-            var filter = "";
 
 
             // Act
@@ -401,7 +400,6 @@ namespace SmileShop.Test
         }
 
         // Add_SentBlankProductGroupName_ReturnErrorMessage
-
         [TestMethod]
         public async Task Add_SentBlankProductGroupName_ReturnErrorMessage()
         {
@@ -669,9 +667,131 @@ namespace SmileShop.Test
         }
 
         // Delete_NoData_ReturnErrorMessage
-        // Delete_ProductIdIsLessOrEqualZero_ReturnErrorMessage
-        // Delete_HaveDataButIdIsNotExist_ReturnErrorMessage
+        // +(merge) Delete_ProductIdIsLessOrEqualZero_ReturnErrorMessage
+        [TestMethod]
+        public async Task Delete_NoData_ReturnErrorMessage()
+        {
+
+            /// ===== Arrange =====
+            var dbName = Guid.NewGuid().ToString();
+            var context = BuildContext(dbName);
+            var mapper = BuildMap();
+
+
+            var httpContext = new Mock<IHttpContextAccessor>();
+            var http = new DefaultHttpContext();
+            httpContext.Setup(_ => _.HttpContext).Returns(http);
+
+            int productGroupId1 = 4;
+            int productGroupId2 = 0;
+            int productGroupId3 = -21;
+
+            /// ===== Act =====
+
+            var service = new ProductGroupServices(context, mapper, httpContext.Object);
+            var result1 = await service.Delete(productGroupId1);
+            var result2 = await service.Delete(productGroupId2);
+            var result3 = await service.Delete(productGroupId3);
+
+            /// ===== Assert =====
+
+            // Result 1 : No data in database must return an error message
+            Assert.IsFalse(result1.IsSuccess);
+            Assert.AreEqual(result1.Message, "No Product Group in this query");
+
+            // Result 2 : if ID (0) not grater than 0,  return an error message
+            Assert.IsFalse(result2.IsSuccess);
+            Assert.AreEqual(result2.Message, "Id must be greater than 0");
+
+            // Result 3 : if ID (-21) not grater than 0,  return an error message
+            Assert.IsFalse(result2.IsSuccess);
+            Assert.AreEqual(result2.Message, "Id must be greater than 0");
+        }
+
         // Delete_WithID_ReturnDeletedResult
+        // + (merge) Delete_HaveDataButIdIsNotExist_ReturnErrorMessage
+        [TestMethod]
+        public async Task Delete_WithID_ReturnDeletedResult()
+        {
+
+
+            /// ===== Arrange =====
+            var dbName = Guid.NewGuid().ToString();
+            var context = BuildContext(dbName);
+            var mapper = BuildMap();
+
+
+            var httpContext = new Mock<IHttpContextAccessor>();
+            var http = new DefaultHttpContext();
+            httpContext.Setup(_ => _.HttpContext).Returns(http);
+
+            await ProductGroupData(context, mapper, httpContext.Object);
+
+            int productGroupId1 = 1;
+            int productGroupId2 = 4;
+            int productGroupId3 = 99;
+
+            // Arrange data for later comparison.
+            var dataProductGroup1 = await context.ProductGroup
+                                                 .Where(x => x.Id == productGroupId1)
+                                                 .FirstOrDefaultAsync();
+            var dataProductGroup2 = await context.ProductGroup
+                                                 .Where(x => x.Id == productGroupId2)
+                                                 .FirstOrDefaultAsync();
+            var dataProductGroup3 = await context.ProductGroup
+                                                 .Where(x => x.Id == productGroupId3)
+                                                 .FirstOrDefaultAsync();
+
+            /// ===== Act =====
+
+            var actContext = BuildContext(dbName);
+            var service = new ProductGroupServices(actContext, mapper, httpContext.Object);
+
+            var result1 = await service.Delete(productGroupId1);
+            var result2 = await service.Delete(productGroupId2);
+            var result3 = await service.Delete(productGroupId3);
+
+            /// ===== Assert =====
+
+            var assContext = BuildContext(dbName);
+
+            // Arrange data for comparison.
+            var chkProductGroup1 = await assContext.ProductGroup
+                                                   .Where(x => x.Id == productGroupId1)
+                                                   .FirstOrDefaultAsync();
+            var chkProductGroup2 = await assContext.ProductGroup
+                                                   .Where(x => x.Id == productGroupId2)
+                                                   .FirstOrDefaultAsync();
+            var chkProductGroup3 = await assContext.ProductGroup
+                                                   .Where(x => x.Id == productGroupId3)
+                                                   .FirstOrDefaultAsync();
+
+            // Result 1 : ProductGroup (Id 1) Must be delete and return with Response
+
+            Assert.IsTrue(result1.IsSuccess);
+            Assert.AreEqual(result1.Message, $"Product Group ({dataProductGroup1.Name}) have been deleted successfully");
+            
+            Assert.IsNotNull(dataProductGroup1);
+            Assert.IsNull(chkProductGroup1);
+
+            // Result 2 : ProductGroup (Id 4) Must be delete and return with Response
+
+            Assert.IsTrue(result2.IsSuccess);
+            Assert.AreEqual(result2.Message, $"Product Group ({dataProductGroup2.Name}) have been deleted successfully");
+
+            Assert.IsNotNull(dataProductGroup2);
+            Assert.IsNull(chkProductGroup2);
+
+
+            // Result 3 : ProductGroup (Id 99) is not in the database, return with Error Message
+
+            Assert.IsFalse(result3.IsSuccess);
+            Assert.AreEqual(result3.Message, "No Product Group in this query");
+
+            Assert.IsNull(dataProductGroup3);
+            Assert.IsNull(chkProductGroup3);
+        }
+
 
         public async Task<User> SetupUser(AppDBContext context, IMapper mapper, IHttpContextAccessor http, UserRegisterDto userdto)
         {

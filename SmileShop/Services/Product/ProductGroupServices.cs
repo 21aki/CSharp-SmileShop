@@ -141,6 +141,10 @@ namespace SmileShop.Services
 
         public async Task<ServiceResponse<ProductGroupDTO>> Add(ProductGroupAddDTO addProductGroup)
         {
+            // Validation
+            if (String.IsNullOrWhiteSpace(addProductGroup.Name))
+                return ResponseResult.Failure<ProductGroupDTO>("Please fill Product Group's Name");
+            
             // User must be presented to perform this method
             if (String.IsNullOrEmpty(GetUserId()))
                 return ResponseResult.Failure<ProductGroupDTO>("User must be presented to perform this method");
@@ -178,6 +182,7 @@ namespace SmileShop.Services
                                        .Include(entity => entity.CreatedByUser)
                                        .Where(x => x.Id == productGroupId)
                                        .FirstOrDefaultAsync();
+
             // If no data return error
             if (data is null)
                 return ResponseResult.Failure<ProductGroupDTO>("No Product Group in this query");

@@ -6,7 +6,6 @@ using System;
 using AutoMapper;
 using SmileShop.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Net.Http.Headers;
 using Moq;
 using SmileShop.Services;
 using System.Threading.Tasks;
@@ -14,9 +13,18 @@ using System.Collections.Generic;
 using SmileShop.DTOs;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Security.Claims;
 
 namespace SmileShop.Test
 {
+    /**
+     * Test Name : ProductGroupServiceTest
+     * Created by : AkiAkira
+     * Version 1.0 : 10 Feb 2021.
+     * 
+     * Test on ProductGroupService
+     */
+
     [TestClass]
     public class ProductGroupServiceTest : TestBase
     {
@@ -34,18 +42,18 @@ namespace SmileShop.Test
             var mapper = BuildMap();
 
 
-            var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            var httpContext = new Mock<IHttpContextAccessor>();
             var http = new DefaultHttpContext();
             // var fakeTenantId = "abcd";
             // context.Request.Headers["Tenant-ID"] = fakeTenantId;
-            mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(http);
+            httpContext.Setup(_ => _.HttpContext).Returns(http);
 
             var pagination = new PaginationDto();
             var filter = "";
             var order = new DataOrderDTO();
 
             /// ===== Act =====
-            var service = new ProductGroupServices(context, mapper, mockHttpContextAccessor.Object);
+            var service = new ProductGroupServices(context, mapper, httpContext.Object);
             var result = await service.GetAll(pagination, filter, order);
 
             /// ==== Assert =====
@@ -62,12 +70,12 @@ namespace SmileShop.Test
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
-            var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            var httpContext = new Mock<IHttpContextAccessor>();
             var http = new DefaultHttpContext();
-            mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(http);
+            httpContext.Setup(_ => _.HttpContext).Returns(http);
 
             // Add Mockup data
-            await ProductGroupData(context, mapper, mockHttpContextAccessor.Object);
+            await ProductGroupData(context, mapper, httpContext.Object);
 
             //Console.WriteLine("Original Data : " + await context1.ProductGroup.CountAsync());
 
@@ -84,7 +92,7 @@ namespace SmileShop.Test
             DataOrderDTO order = new DataOrderDTO();
 
             /// ===== Act =====
-            var service = new ProductGroupServices(actContext, mapper, mockHttpContextAccessor.Object);
+            var service = new ProductGroupServices(actContext, mapper, httpContext.Object);
 
             var result1 = await service.GetAll(pagination, filter, order);
             var result2 = await service.GetAll(pagination2, filter, order);
@@ -130,12 +138,12 @@ namespace SmileShop.Test
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
-            var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            var httpContext = new Mock<IHttpContextAccessor>();
             var http = new DefaultHttpContext();
-            mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(http);
+            httpContext.Setup(_ => _.HttpContext).Returns(http);
 
             // Add Mockup data
-            await ProductGroupData(context, mapper, mockHttpContextAccessor.Object);
+            await ProductGroupData(context, mapper, httpContext.Object);
 
             // Prepare Query
             var pagination = new PaginationDto();
@@ -151,7 +159,7 @@ namespace SmileShop.Test
 
             /// ===== Act =====
 
-            var service = new ProductGroupServices(actContext, mapper, mockHttpContextAccessor.Object);
+            var service = new ProductGroupServices(actContext, mapper, httpContext.Object);
 
             var result = await service.GetAll(pagination, filter1, order);
             var result2 = await service.GetAll(pagination, filter2, order);
@@ -188,17 +196,17 @@ namespace SmileShop.Test
             var mapper = BuildMap();
 
 
-            var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            var httpContext = new Mock<IHttpContextAccessor>();
             var http = new DefaultHttpContext();
             // var fakeTenantId = "abcd";
             // context.Request.Headers["Tenant-ID"] = fakeTenantId;
-            mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(http);
+            httpContext.Setup(_ => _.HttpContext).Returns(http);
             
             var filter = "";
 
 
             // Act
-            var service = new ProductGroupServices(context, mapper, mockHttpContextAccessor.Object);
+            var service = new ProductGroupServices(context, mapper, httpContext.Object);
             var result1 = await service.GetList("");
             var result2 = await service.GetList("Group");
 
@@ -227,16 +235,16 @@ namespace SmileShop.Test
             var mapper = BuildMap();
 
 
-            var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            var httpContext = new Mock<IHttpContextAccessor>();
             var http = new DefaultHttpContext();
-            mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(http);
+            httpContext.Setup(_ => _.HttpContext).Returns(http);
 
-            await ProductGroupData(context, mapper, mockHttpContextAccessor.Object);
+            await ProductGroupData(context, mapper, httpContext.Object);
 
             var actContext = BuildContext(dbName);
 
             // Act
-            var service = new ProductGroupServices(actContext, mapper, mockHttpContextAccessor.Object);
+            var service = new ProductGroupServices(actContext, mapper, httpContext.Object);
             var result1 = await service.GetList("");
             var result2 = await service.GetList("Group");
             var result3 = await service.GetList("Group 3");
@@ -279,16 +287,16 @@ namespace SmileShop.Test
             var context = BuildContext(dbName);
             var mapper = BuildMap();
 
-            var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            var httpContext = new Mock<IHttpContextAccessor>();
             var http = new DefaultHttpContext();
-            mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(http);
+            httpContext.Setup(_ => _.HttpContext).Returns(http);
 
             var productGroupId1 = -5;
             var productGroupId2 = 0;
             var productGroupId3 = 1;
 
             /// ===== Act =====
-            var service = new ProductGroupServices(context, mapper, mockHttpContextAccessor.Object);
+            var service = new ProductGroupServices(context, mapper, httpContext.Object);
 
             var result1 = await service.Get(productGroupId1);
             var result2 = await service.Get(productGroupId2);
@@ -322,11 +330,11 @@ namespace SmileShop.Test
             var context = BuildContext(dbName);
             var mapper = BuildMap();
 
-            var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            var httpContext = new Mock<IHttpContextAccessor>();
             var http = new DefaultHttpContext();
-            mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(http);
+            httpContext.Setup(_ => _.HttpContext).Returns(http);
 
-            await ProductGroupData(context, mapper, mockHttpContextAccessor.Object);
+            await ProductGroupData(context, mapper, httpContext.Object);
 
             var productGroupId1 = -5;
             var productGroupId2 = 1;
@@ -336,7 +344,7 @@ namespace SmileShop.Test
             var actContext = BuildContext(dbName);
 
             /// ===== Act =====
-            var service = new ProductGroupServices(actContext, mapper, mockHttpContextAccessor.Object);
+            var service = new ProductGroupServices(actContext, mapper, httpContext.Object);
 
             var result1 = await service.Get(productGroupId1);
             var result2 = await service.Get(productGroupId2);
@@ -359,8 +367,118 @@ namespace SmileShop.Test
         }
 
         // Add_NoLoginUser_ReturnErrorMessage
+        [TestMethod]
+        public async Task Add_NoLoginUser_ReturnErrorMessage()
+        {
+
+            /// ===== Arrange =====
+            var dbName = Guid.NewGuid().ToString();
+            var context = BuildContext(dbName);
+            var mapper = BuildMap();
+
+            var httpContext = new Mock<IHttpContextAccessor>();
+            var http = new DefaultHttpContext();
+            httpContext.Setup(_ => _.HttpContext).Returns(http);
+
+            var addProductGroup = new ProductGroupAddDTO { Name = "Test" };
+
+            /// ===== Act =====
+            var service = new ProductGroupServices(context, mapper, httpContext.Object);
+            var result = await service.Add(addProductGroup);
+
+            /// ===== Assert =====
+            
+            // Check that database has no new record
+            var resultContext = BuildContext(dbName);
+            var recordCount = await resultContext.ProductGroup.CountAsync();
+
+            Assert.AreEqual(recordCount, 0);
+
+            // Result : Return an error message
+            Assert.IsFalse(result.IsSuccess);
+            Assert.AreEqual(result.Message, "User must be presented to perform this method");
+        }
+
         // Add_SentBlankProductGroupName_ReturnErrorMessage
+
+        [TestMethod]
+        public async Task Add_SentBlankProductGroupName_ReturnErrorMessage()
+        {
+            /// ===== Arrange =====
+            var dbName = Guid.NewGuid().ToString();
+            var context = BuildContext(dbName);
+            var mapper = BuildMap();
+
+            var httpContext = new Mock<IHttpContextAccessor>();
+            var http = new DefaultHttpContext();
+            httpContext.Setup(_ => _.HttpContext).Returns(http);
+
+            var addProductGroup = new ProductGroupAddDTO { Name = "" };
+
+            /// ===== Act =====
+            var service = new ProductGroupServices(context, mapper, httpContext.Object);
+            var result = await service.Add(addProductGroup);
+
+
+            /// ===== Assert =====
+
+            // Check that database has no new record
+            var resultContext = BuildContext(dbName);
+            var recordCount = await resultContext.ProductGroup.CountAsync();
+
+            Assert.AreEqual(recordCount, 0);
+
+            // Result : Return an error message
+            Assert.IsFalse(result.IsSuccess);
+            Assert.AreEqual(result.Message, "Please fill Product Group's Name");
+        }
+
         // Add_WithData_ReturnAddedResult
+        [TestMethod]
+        public async Task Add_WithData_ReturnAddedResult()
+        {
+
+            /// ===== Arrange =====
+            var dbName = Guid.NewGuid().ToString();
+            var context = BuildContext(dbName);
+            var mapper = BuildMap();
+
+            var httpContext = new Mock<IHttpContextAccessor>();
+            var http = new DefaultHttpContext();
+            httpContext.Setup(_ => _.HttpContext).Returns(http);
+
+            var addProductGroup = new ProductGroupAddDTO { Name = "Test" };
+
+            var user = SetupUser(context, mapper, httpContext.Object, new UserRegisterDto { Username = "test", Password = "test" }).Result;
+
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Username)
+            };
+
+            var loginHttpContext = new Mock<IHttpContextAccessor>();
+            var loginHttp = new DefaultHttpContext();
+            loginHttp.User.AddIdentity(new ClaimsIdentity(claims));
+            loginHttpContext.Setup(_ => _.HttpContext).Returns(loginHttp);
+
+
+            /// ===== Act =====
+            var service = new ProductGroupServices(context, mapper, loginHttpContext.Object);
+            var result = await service.Add(addProductGroup);
+
+            /// ===== Assert =====
+
+            // Check that database has new record
+            var resultContext = BuildContext(dbName);
+            var recordCount = await resultContext.ProductGroup.CountAsync();
+
+            Assert.AreEqual(recordCount, 1);
+
+            // Result : Return an error message
+            Assert.IsTrue(result.IsSuccess);
+            Assert.AreEqual(result.Message, $"Product Group ({addProductGroup.Name}) have been added successfully");
+        }
 
         // Edit_NoData_ReturnErrorMessage
         // Edit_ProductIdIsLessOrEqualZero_ReturnErrorMessage
@@ -373,23 +491,26 @@ namespace SmileShop.Test
         // Delete_HaveDataButIdIsNotExist_ReturnErrorMessage
         // Delete_WithID_ReturnDeletedResult
 
-        public async Task ProductGroupData(AppDBContext context, IMapper mapper, IHttpContextAccessor http)
+        public async Task<User> SetupUser(AppDBContext context, IMapper mapper, IHttpContextAccessor http, UserRegisterDto userdto)
         {
             // Stand in User
             var auth = new AuthService(http, context, mapper, SmileShop.Program.Configuration);
-            var userdto = new UserRegisterDto { Username = "test", Password = "test" };
             await auth.Register(userdto);
             User user = await context.Users.SingleOrDefaultAsync(x => x.Username.ToLower().Equals(userdto.Username.ToLower()));
 
-            var userId = user.Id;
+            return user;
+        }
+        public async Task ProductGroupData(AppDBContext context, IMapper mapper, IHttpContextAccessor http)
+        {
+            var user = SetupUser(context, mapper, http, new UserRegisterDto { Username = "Test", Password = "Test" }).Result;
 
             // Stand in Product Group
             List<ProductGroup> productGroups = new List<ProductGroup> {
-                new ProductGroup { Id = 1, Name = "Test Product Group 1", CreatedByUserId = userId, CreatedDate = DateTime.Now },
-                new ProductGroup { Id = 2, Name = "Test Product Group 2", CreatedByUserId = userId, CreatedDate = DateTime.Now },
-                new ProductGroup { Id = 3, Name = "Test Product Group 3", CreatedByUserId = userId, CreatedDate = DateTime.Now },
-                new ProductGroup { Id = 4, Name = "Test Product Group 4", CreatedByUserId = userId, CreatedDate = DateTime.Now },
-                new ProductGroup { Id = 5, Name = "Test Product Group 5", CreatedByUserId = userId, CreatedDate = DateTime.Now },
+                new ProductGroup { Name = "Test Product Group 1", CreatedByUserId = user.Id, CreatedDate = DateTime.Now },
+                new ProductGroup { Name = "Test Product Group 2", CreatedByUserId = user.Id, CreatedDate = DateTime.Now },
+                new ProductGroup { Name = "Test Product Group 3", CreatedByUserId = user.Id, CreatedDate = DateTime.Now },
+                new ProductGroup { Name = "Test Product Group 4", CreatedByUserId = user.Id, CreatedDate = DateTime.Now },
+                new ProductGroup { Name = "Test Product Group 5", CreatedByUserId = user.Id, CreatedDate = DateTime.Now },
             };
 
             // Add Product Group

@@ -8,9 +8,6 @@ namespace SmileShop.DTOs
 {
     public class ProductGroupAddDTO
     {
-
-        [Reqired]
-        [StringLength(50)]
         public string Name { get; set; }
     }
 }

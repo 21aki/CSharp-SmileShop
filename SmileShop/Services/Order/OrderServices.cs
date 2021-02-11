@@ -109,18 +109,19 @@ namespace SmileShop.Services
             if(addOrder.Discount > 1 || addOrder.Discount < 0)
                 return ResponseResult.Failure<OrderDTO>("Discount must be percentage range of 0.00 to 1.00");
 
-            var listOrderDetail = addOrder.OrderDetails;
+            var listOrderDetail = _mapper.Map<List<OrderDetail>>(addOrder.OrderDetails);
             int orderQuantity = 0;
             decimal orderTotal = 0;
             decimal orderNet = 0;
 
             //For each OrderDetail check if Product is sufficient for distract from stocks.
+
             for (int i = 0; i < listOrderDetail.Count; i++)
             {
                 bool result = false;
                 decimal price = 0;
 
-                (result, price) = await ProductIsSufficient(listOrderDetail.ElementAt(i).ProductId, listOrderDetail.ElementAt(i).Quantity);
+                (result, price) = await ProductIsSufficient(listOrderDetail[i].ProductId, listOrderDetail[i].Quantity);
                 if (!result)
                 {
                     //Return fail if Produis insufficient
@@ -129,18 +130,19 @@ namespace SmileShop.Services
                 } 
                 else
                 {
-                    listOrderDetail.ElementAt(i).Price = price;
-                    orderQuantity += listOrderDetail.ElementAt(i).Quantity;
+                    listOrderDetail[i].Price = price;
+                    listOrderDetail[i].DiscountPrice = price * addOrder.Discount;
+                    orderQuantity += listOrderDetail[i].Quantity;
                     orderTotal += orderQuantity * price;
                 }
             }
-            addOrder.OrderDetails = listOrderDetail;
 
-            orderNet = orderTotal - (orderTotal * addOrder.Discount);
+            orderNet = orderTotal - listOrderDetail.Sum(_ => _.DiscountPrice);
 
             // Create & set data
             Order newOrder = _mapper.Map<Order>(addOrder);
 
+            newOrder.OrderDetails = listOrderDetail;
             newOrder.CreatedByUserId = Guid.Parse(GetUserId());
             newOrder.CreatedDate = Now();
             newOrder.Total = orderTotal;
@@ -154,8 +156,7 @@ namespace SmileShop.Services
             var dto = _mapper.Map<OrderDTO>(newOrder);
 
             //Add User Details
-            dto.CreatedBy.Id = GetUserId();
-            dto.CreatedBy.Username = GetUsername();
+            dto.CreatedBy = new UserDto { Id = GetUserId(), Username = GetUsername() };
 
             return ResponseResult.Success<OrderDTO>(dto);
 

@@ -10,7 +10,6 @@ namespace SmileShop.DTOs
     {
         public int Id { get; set; }
 
-        public DateTime Date { get; set; }
         public int ItemCount { get; set; }
         public decimal Total { get; set; }
         public decimal Discount { get; set; }

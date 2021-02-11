@@ -9,7 +9,7 @@ namespace SmileShop.DTOs
     public class OrderAddDTO
     {
 
-        public DateTime Date { get; set; }
+        public DateTime CreatedDate { get; set; }
         public decimal Discount { get; set; }
 
         public ICollection<OrderDetailDTO> OrderDetails { get; set; }

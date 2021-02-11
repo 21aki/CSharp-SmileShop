@@ -163,8 +163,7 @@ namespace SmileShop.Services
             // Mapping
             var dto = _mapper.Map<ProductGroupDTO>(data);
 
-            dto.CreatedBy.Id = GetUserId();
-            dto.CreatedBy.Username = GetUsername();
+            dto.CreatedBy = new UserDto { Id = GetUserId(), Username = GetUsername() };
 
             // Return result
             return ResponseResult.Success<ProductGroupDTO>(dto, $"Product Group ({data.Name}) have been added successfully");

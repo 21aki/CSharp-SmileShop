@@ -235,13 +235,13 @@ namespace SmileShop.Migrations
             modelBuilder.Entity("SmileShop.Models.Inventory", b =>
                 {
                     b.HasOne("SmileShop.Models.User", "CreatedByUser")
-                        .WithMany("Inventory_")
+                        .WithMany("Stock_")
                         .HasForeignKey("CreatedByUserId")
                         .HasConstraintName("FK_Inventory_User")
                         .IsRequired();
 
                     b.HasOne("SmileShop.Models.Product", "Product_")
-                        .WithMany("Inventory_")
+                        .WithMany("Stock_")
                         .HasForeignKey("ProductId")
                         .HasConstraintName("FK_Inventory_Product")
                         .OnDelete(DeleteBehavior.Cascade)

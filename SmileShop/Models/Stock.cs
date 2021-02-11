@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmileShop.Models
 {
-    public class Inventory
+    public class Stock
     {
         [Key]
         public int Id { get; set; }

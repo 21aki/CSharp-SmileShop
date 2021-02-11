@@ -67,19 +67,19 @@ namespace SmileShop.Data
                     .HasConstraintName("FK_ProductGroup_User");
             });
 
-            modelBuilder.Entity<Inventory>(entity =>
+            modelBuilder.Entity<Stock>(entity =>
             {
                 entity.HasKey(e => new { e.Id });
 
                 entity.HasOne(d => d.Product_)
-                    .WithMany(p => p.Inventory_)
+                    .WithMany(p => p.Stock_)
                     .HasForeignKey(d => d.ProductId)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Inventory_Product");
 
 
                 entity.HasOne(d => d.CreatedByUser)
-                    .WithMany(p => p.Inventory_)
+                    .WithMany(p => p.Stock_)
                     .HasForeignKey(d => d.CreatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Inventory_User");
@@ -99,6 +99,6 @@ namespace SmileShop.Data
         public DbSet<OrderDetail> OrderDetail { get; set; }
         public DbSet<Product> Product { get; set; }
         public DbSet<ProductGroup> ProductGroup { get; set; }
-        public DbSet<Inventory> Inventory { get; set; }
+        public DbSet<Stock> Stock { get; set; }
     }
 }

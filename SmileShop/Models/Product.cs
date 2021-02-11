@@ -11,7 +11,7 @@ namespace SmileShop.Models
         public Product()
         {
             OrderDetails = new HashSet<OrderDetail>();
-            Inventory_ = new HashSet<Inventory>();
+            Stock_ = new HashSet<Stock>();
         }
 
         public int Id { get; set; }
@@ -21,7 +21,7 @@ namespace SmileShop.Models
         [MaxLength(50)]
         public string Name { get; set; }
         public decimal Price { get; set; }
-        public int Stock { get; set; }
+        public int StockCount { get; set; }
         public Guid CreatedByUserId { get; set; }
         public DateTime CreatedDate { get; set; }
         public bool? Status { get; set; }
@@ -29,7 +29,7 @@ namespace SmileShop.Models
         public virtual ProductGroup Group_ { get; set; }
         public virtual User CreatedByUser { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
-        public virtual ICollection<Inventory> Inventory_ { get; set; }
+        public virtual ICollection<Stock> Stock_ { get; set; }
 
     }
 }

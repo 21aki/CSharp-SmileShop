@@ -212,11 +212,11 @@ namespace SmileShop.Services
             if (product is null)
                 return (false, 0);
 
-            if (product.Stock < amount)
+            if (product.StockCount < amount)
                 return (false, 0);
 
             // If Sufficient then decread number from stock and update
-            product.Stock = product.Stock - amount;
+            product.StockCount = product.StockCount - amount;
             _dbContext.Product.Update(product);
 
             return (true, product.Price);

@@ -152,10 +152,10 @@ namespace SmileShop.Services
             await _dbContext.Order.AddAsync(newOrder);
             await _dbContext.SaveChangesAsync();
 
-            //Mapping
+            // Mapping
             var dto = _mapper.Map<OrderDTO>(newOrder);
 
-            //Add User Details
+            // Add User Details
             dto.CreatedBy = new UserDto { Id = GetUserId(), Username = GetUsername() };
 
             return ResponseResult.Success<OrderDTO>(dto);

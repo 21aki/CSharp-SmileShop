@@ -14,6 +14,7 @@ using SmileShop.DTOs;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Security.Claims;
+using System.Linq;
 
 namespace SmileShop.Test
 {
@@ -449,7 +450,7 @@ namespace SmileShop.Test
 
             var addProductGroup = new ProductGroupAddDTO { Name = "Test" };
 
-            var user = SetupUser(context, mapper, httpContext.Object, new UserRegisterDto { Username = "test", Password = "test" }).Result;
+            var user = await SetupUser(context, mapper, httpContext.Object, new UserRegisterDto { Username = "test", Password = "test" });
 
             List<Claim> claims = new List<Claim>
             {
@@ -480,11 +481,192 @@ namespace SmileShop.Test
             Assert.AreEqual(result.Message, $"Product Group ({addProductGroup.Name}) have been added successfully");
         }
 
-        // Edit_NoData_ReturnErrorMessage
-        // Edit_ProductIdIsLessOrEqualZero_ReturnErrorMessage
-        // Edit_HaveDataButIdIsNotExist_ReturnErrorMessage
         // Edit_SentBlankProductGroupName_ReturnErrorMessage
+        [TestMethod]
+        public async Task Edit_SentBlankProductGroupName_ReturnErrorMessage()
+        {
+
+            /// ===== Arrange =====
+            var dbName = Guid.NewGuid().ToString();
+            var context = BuildContext(dbName);
+            var mapper = BuildMap();
+
+
+            var httpContext = new Mock<IHttpContextAccessor>();
+            var http = new DefaultHttpContext();
+            httpContext.Setup(_ => _.HttpContext).Returns(http);
+
+            var productGroupId = 1;
+            var editProductGroup = new ProductGroupAddDTO { };
+
+            /// ===== Act =====
+
+            var service = new ProductGroupServices(context, mapper, httpContext.Object);
+            var result = await service.Edit(productGroupId, editProductGroup);
+
+            /// ===== Assert =====
+
+            Assert.IsFalse(result.IsSuccess);
+            Assert.AreEqual(result.Message, "Please fill Product Group's Name");
+        }
+
+        // Edit_ProductIdIsLessOrEqualZero_ReturnErrorMessage
+        [TestMethod]
+        public async Task Edit_ProductIdIsLessOrEqualZero_ReturnErrorMessage()
+        {
+
+            /// ===== Arrange =====
+            var dbName = Guid.NewGuid().ToString();
+            var context = BuildContext(dbName);
+            var mapper = BuildMap();
+
+
+            var httpContext = new Mock<IHttpContextAccessor>();
+            var http = new DefaultHttpContext();
+            httpContext.Setup(_ => _.HttpContext).Returns(http);
+            
+            var editProductGroup = new ProductGroupAddDTO {};
+
+            /// ===== Act =====
+
+            var service = new ProductGroupServices(context, mapper, httpContext.Object);
+            var result1 = await service.Edit(0, editProductGroup);
+            var result2 = await service.Edit(-10, editProductGroup);
+
+            /// ===== Assert =====
+
+            // Result 1 : When Id = 0
+            Assert.IsFalse(result1.IsSuccess);
+            Assert.AreEqual(result1.Message, "Id must be greater than 0");
+
+            // Result 1 : When Id = -10
+            Assert.IsFalse(result2.IsSuccess);
+            Assert.AreEqual(result2.Message, "Id must be greater than 0");
+        }
+
+        // Edit_NoData_ReturnErrorMessage
+        [TestMethod]
+        public async Task Edit_NoData_ReturnErrorMessage()
+        {
+
+            /// ===== Arrange =====
+            var dbName = Guid.NewGuid().ToString();
+            var context = BuildContext(dbName);
+            var mapper = BuildMap();
+
+
+            var httpContext = new Mock<IHttpContextAccessor>();
+            var http = new DefaultHttpContext();
+            httpContext.Setup(_ => _.HttpContext).Returns(http);
+
+            var editProductGroup = new ProductGroupAddDTO { Name = "Test Product Group" };
+
+            /// ===== Act =====
+
+            var service = new ProductGroupServices(context, mapper, httpContext.Object);
+            var result = await service.Edit(1, editProductGroup);
+
+            /// ===== Assert =====
+
+            // No data in database must return an error message
+            Assert.IsFalse(result.IsSuccess);
+            Assert.AreEqual(result.Message, "No Product Group in this query");
+        }
+
         // Edit_WithData_ReturnEditedResult
+        // + (merge) Edit_HaveDataButIdIsNotExist_ReturnErrorMessage
+        [TestMethod]
+        public async Task Edit_WithData_ReturnEditedResult()
+        {
+
+            /// ===== Arrange =====
+            var dbName = Guid.NewGuid().ToString();
+            var context = BuildContext(dbName);
+            var mapper = BuildMap();
+
+
+            var httpContext = new Mock<IHttpContextAccessor>();
+            var http = new DefaultHttpContext();
+            httpContext.Setup(_ => _.HttpContext).Returns(http);
+
+            await ProductGroupData(context, mapper, httpContext.Object);
+
+            var productGroupId1 = 1;
+            var productGroupId2 = 3;
+            var productGroupId3 = 99;
+
+            var editProductGroup1 = new ProductGroupAddDTO { Name = "Test Product Group Edit 1" };
+            var editProductGroup2 = new ProductGroupAddDTO { Name = "Test Product Group Edit 2" };
+            var editProductGroup3 = new ProductGroupAddDTO { Name = "Test Product Group Edit 3" };
+
+            // Arrange data for later comparison.
+            var dataProductGroup1 = await context.ProductGroup
+                                                 .Where(x => x.Id == productGroupId1)
+                                                 .FirstOrDefaultAsync();
+            var dataProductGroup2 = await context.ProductGroup
+                                                 .Where(x => x.Id == productGroupId2)
+                                                 .FirstOrDefaultAsync();
+            var dataProductGroup3 = await context.ProductGroup
+                                                 .Where(x => x.Id == productGroupId3)
+                                                 .FirstOrDefaultAsync();
+
+            /// ===== Act =====
+
+            var actContext = BuildContext(dbName);
+
+            var service = new ProductGroupServices(actContext, mapper, httpContext.Object);
+            var result1 = await service.Edit(productGroupId1, editProductGroup1);
+            var result2 = await service.Edit(productGroupId2, editProductGroup2);
+            var result3 = await service.Edit(productGroupId3, editProductGroup3);
+
+            /// ===== Assert =====
+
+            var assContext = BuildContext(dbName);
+
+            var chkProductGroup1 = await assContext.ProductGroup
+                                                   .Where(x => x.Id == productGroupId1)
+                                                   .FirstOrDefaultAsync();
+            var chkProductGroup2 = await assContext.ProductGroup
+                                                   .Where(x => x.Id == productGroupId2)
+                                                   .FirstOrDefaultAsync();
+            var chkProductGroup3 = await assContext.ProductGroup
+                                                   .Where(x => x.Id == productGroupId3)
+                                                   .FirstOrDefaultAsync();
+
+
+            // Result 1 : Edit ProductGroup (ID 1) Must be changed
+            Assert.IsTrue(result1.IsSuccess);
+            Assert.AreEqual(result1.Message, $"Product Group ({editProductGroup1.Name}) have been edited successfully");
+
+            Assert.IsNotNull(chkProductGroup1);
+
+            Assert.AreEqual(result1.Data.Id, productGroupId1);
+            Assert.AreEqual(result1.Data.Id, chkProductGroup1.Id);
+
+            Assert.AreNotEqual(result1.Data.Name, dataProductGroup1.Name);
+            Assert.AreEqual(result1.Data.Name, chkProductGroup1.Name);
+
+            // Result 2 : Edit ProductGroup (ID 3) Must be changed
+            Assert.IsTrue(result2.IsSuccess);
+            Assert.AreEqual(result2.Message, $"Product Group ({editProductGroup2.Name}) have been edited successfully");
+
+            Assert.IsNotNull(chkProductGroup2);
+
+            Assert.AreEqual(result2.Data.Id, productGroupId2);
+            Assert.AreEqual(result2.Data.Id, chkProductGroup2.Id);
+
+            Assert.AreNotEqual(result2.Data.Name, dataProductGroup2.Name);
+            Assert.AreEqual(result2.Data.Name, chkProductGroup2.Name);
+
+
+            // Result 3 : Edit ProductGroup (ID 99) Must be return an error message
+            Assert.IsFalse(result3.IsSuccess);
+            Assert.AreEqual(result3.Message, "No Product Group in this query");
+
+            Assert.IsNull(dataProductGroup3);
+            Assert.IsNull(chkProductGroup3);
+
+        }
 
         // Delete_NoData_ReturnErrorMessage
         // Delete_ProductIdIsLessOrEqualZero_ReturnErrorMessage
@@ -502,7 +684,7 @@ namespace SmileShop.Test
         }
         public async Task ProductGroupData(AppDBContext context, IMapper mapper, IHttpContextAccessor http)
         {
-            var user = SetupUser(context, mapper, http, new UserRegisterDto { Username = "Test", Password = "Test" }).Result;
+            var user = await SetupUser(context, mapper, http, new UserRegisterDto { Username = "Test", Password = "Test" });
 
             // Stand in Product Group
             List<ProductGroup> productGroups = new List<ProductGroup> {

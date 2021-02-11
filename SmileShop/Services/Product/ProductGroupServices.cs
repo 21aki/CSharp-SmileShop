@@ -172,10 +172,12 @@ namespace SmileShop.Services
 
         public async Task<ServiceResponse<ProductGroupDTO>> Edit(int productGroupId, ProductGroupAddDTO addProductGroup)
         {
-
-            // Id must be greater than 0
+            // Validation
             if (productGroupId <= 0)
                 return ResponseResult.Failure<ProductGroupDTO>("Id must be greater than 0");
+
+            if (String.IsNullOrWhiteSpace(addProductGroup.Name))
+                return ResponseResult.Failure<ProductGroupDTO>("Please fill Product Group's Name");
 
             // Gettering data
             var data = await _dbContext.ProductGroup

@@ -80,7 +80,7 @@ namespace SmileShop.Services
 
             // Return error if count is 0
             if (result.Count == 0)
-                return ResponseResultWithPagination.Failure<List<ProductGroupDTO>>("Product Group is not Exist");
+                throw new InvalidOperationException("Product Group is not Exist");
 
             // Mapping
             var dto = _mapper.Map<List<ProductGroupDTO>>(result);
@@ -98,7 +98,7 @@ namespace SmileShop.Services
             // Filtering data
             if (String.IsNullOrEmpty(productGroupfilter))
             {
-                return ResponseResult.Failure<List<ProductGroupDTO>>("This query must provided filter");
+                throw new ArgumentNullException("Product Group Name", "This query must provided filter");
             }
 
             query = query.Where(x => x.Name.Contains(productGroupfilter));
@@ -108,7 +108,7 @@ namespace SmileShop.Services
 
             // Return error if count is 0
             if (result.Count == 0)
-                return ResponseResult.Failure<List<ProductGroupDTO>>("Product Group is not Exist");
+                throw new InvalidOperationException("Product Group is not Exist");
 
             // Mapping
             var dto = _mapper.Map<List<ProductGroupDTO>>(result);
@@ -131,7 +131,7 @@ namespace SmileShop.Services
 
             // If no data return error
             if (data is null)
-                return ResponseResult.Failure<ProductGroupDTO>("Product Group is not Exist");
+                throw new InvalidOperationException("Product Group is not Exist");
 
             var dto = _mapper.Map<ProductGroupDTO>(data);
 
@@ -142,12 +142,11 @@ namespace SmileShop.Services
         public async Task<ServiceResponse<ProductGroupDTO>> Add(ProductGroupAddDTO addProductGroup)
         {
             // Validation
-            if (String.IsNullOrWhiteSpace(addProductGroup.Name))
-                return ResponseResult.Failure<ProductGroupDTO>("Please fill Product Group's Name");
-            
+            Validate(addProductGroup);
+
             // User must be presented to perform this method
             if (String.IsNullOrEmpty(GetUserId()))
-                return ResponseResult.Failure<ProductGroupDTO>("User must be presented to perform this method");
+                throw new UnauthorizedAccessException("User must be presented to perform this method");
 
             // Create & set data
             ProductGroup data = _mapper.Map<ProductGroup>(addProductGroup);
@@ -174,10 +173,9 @@ namespace SmileShop.Services
         {
             // Validation
             if (productGroupId <= 0)
-                return ResponseResult.Failure<ProductGroupDTO>("Id must be greater than 0");
+                throw new ArgumentOutOfRangeException("Product Group Id", "Id must be greater than 0");
 
-            if (String.IsNullOrWhiteSpace(addProductGroup.Name))
-                return ResponseResult.Failure<ProductGroupDTO>("Please fill Product Group's Name");
+            Validate(addProductGroup);
 
             // Gettering data
             var data = await _dbContext.ProductGroup
@@ -187,7 +185,7 @@ namespace SmileShop.Services
 
             // If no data return error
             if (data is null)
-                return ResponseResult.Failure<ProductGroupDTO>("Product Group is not Exist");
+                throw new InvalidOperationException("Product Group is not Exist");
 
             // Set data
             _mapper.Map(addProductGroup, data);
@@ -207,7 +205,7 @@ namespace SmileShop.Services
 
             // Id must be greater than 0
             if (productGroupId <= 0)
-                return ResponseResult.Failure<ProductGroupDTO>("Id must be greater than 0");
+                throw new ArgumentOutOfRangeException("Product Group Id", "Id must be greater than 0");
 
             // Gettering data
             var data = await _dbContext.ProductGroup
@@ -217,7 +215,7 @@ namespace SmileShop.Services
 
             // If no data return error
             if (data is null)
-                return ResponseResult.Failure<ProductGroupDTO>("Product Group is not Exist");
+                throw new InvalidOperationException("Product Group is not Exist");
 
             // Remove data
             _dbContext.ProductGroup.Remove(data);
@@ -228,6 +226,12 @@ namespace SmileShop.Services
 
             // Return result
             return ResponseResult.Success<ProductGroupDTO>(dto, $"Product Group ({data.Name}) have been deleted successfully");
+        }
+
+        public  void Validate(ProductGroupAddDTO productGroup)
+        {
+            if (String.IsNullOrWhiteSpace(productGroup.Name))
+                throw new ArgumentNullException("Name","Please fill Product Group's Name");
         }
     }
 }

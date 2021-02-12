@@ -118,11 +118,11 @@ namespace SmileShop.Services
                 throw new UnauthorizedAccessException("User must be presented to perform this method");
 
             // Stock value must be equal or greater than 0
-            if (stockChanges.Debit < 0 || stockChanges.Credit < 0)
-                throw new ArgumentNullException("Debit, Credit", "Stock value must be equal or greater than 0.");
-
             if (stockChanges.Debit == 0 && stockChanges.Credit == 0)
                 throw new ArgumentNullException("Debit, Credit", "Stock value is required.");
+
+            if (stockChanges.Debit < 0 || stockChanges.Credit < 0)
+                throw new ArgumentOutOfRangeException("Debit, Credit", "Stock value must be equal or greater than 0.");
 
             if (stockChanges.Debit > 0 && stockChanges.Credit > 0)
                 throw new ArgumentOutOfRangeException("Debit, Credit", "Stock value must be one of debit or credit only.");

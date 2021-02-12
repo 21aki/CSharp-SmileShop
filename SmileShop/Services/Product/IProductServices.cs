@@ -30,9 +30,6 @@ namespace SmileShop.Services
         ///To read Product as lists with Pagination and able to search by ProductGroup & Name
         Task<ServiceResponseWithPagination<List<ProductDTO>>> GetAll(PaginationDto pagination = null, ProductFilterDTO productFilter = null, DataOrderDTO ordering = null);
 
-        ///To read Product as lists and able to search by ProductGroup & Name
-        Task<ServiceResponse<List<ProductDTO>>> GetAll(ProductFilterDTO productFilter = null);
-
         ///To read individual Product
         Task<ServiceResponse<ProductDTO>> Get(int productId);
         ///To create individual Product

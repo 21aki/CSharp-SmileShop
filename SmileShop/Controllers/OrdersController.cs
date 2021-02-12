@@ -24,16 +24,30 @@ namespace SmileShop.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] PaginationDto pagination, [FromQuery] OrderFilterDTO filter, [FromQuery] DataOrderDTO order)
         {
-            var result = await _service.GetAll(pagination, filter, order);
-            return Ok(result);
+            try
+            {
+                var result = await _service.GetAll(pagination, filter, order);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return Ok(ResponseResultWithPagination.Failure<OrderDTO>(ex.Message));
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
 
-            var result = await _service.Get(id);
-            return Ok(result);
+            try
+            {
+                var result = await _service.Get(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return Ok(ResponseResult.Failure<OrderDTO>(ex.Message));
+            }
         }
 
         [HttpPost]
@@ -46,8 +60,6 @@ namespace SmileShop.Controllers
             }
             catch (Exception ex)
             {
-                //Return fail if Product is insufficient
-                //EF will not savechange.
                 return Ok(ResponseResult.Failure<OrderDTO>(ex.Message));
             }
         }
@@ -57,8 +69,15 @@ namespace SmileShop.Controllers
         public async Task<IActionResult> Delete(int id)
         {
 
-            var result = await _service.Delete(id);
-            return Ok(result);
+            try
+            {
+                var result = await _service.Delete(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return Ok(ResponseResult.Failure<OrderDTO>(ex.Message));
+            }
         }
     }
 }

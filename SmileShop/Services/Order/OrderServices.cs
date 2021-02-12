@@ -71,7 +71,7 @@ namespace SmileShop.Services
 
             // Return error if count is 0
             if (result.Count == 0)
-                return ResponseResultWithPagination.Failure<List<OrderOnlyDTO>>("Order is not Exist");
+                throw new InvalidOperationException("Order is not Exist");
 
             // Mapping
             var dto = _mapper.Map<List<OrderOnlyDTO>>(result);
@@ -83,6 +83,9 @@ namespace SmileShop.Services
         public async Task<ServiceResponse<OrderDTO>> Get(int OrderId)
         {
 
+            if (OrderId <= 0)
+                throw new ArgumentOutOfRangeException("OrderId", "Id must be greater than 0.")
+
             // Quering data
             var result = await _dbContext.Order
                                     .Include(o => o.OrderDetails)
@@ -92,7 +95,7 @@ namespace SmileShop.Services
 
             // Return error if count is 0
             if (result is null)
-                return ResponseResult.Failure<OrderDTO>("Order is not Exist");
+                throw new InvalidOperationException("Order is not Exist");
 
             // Mapping
             var dto = _mapper.Map<OrderDTO>(result);
@@ -106,10 +109,10 @@ namespace SmileShop.Services
         {
             // User must be presented to perform this method
             if (String.IsNullOrEmpty(GetUserId()))
-                return ResponseResult.Failure<OrderDTO>("User must be presented to perform this method");
+                throw new UnauthorizedAccessException("User must be presented to perform this method");
 
             if (addOrder.Discount > 1 || addOrder.Discount < 0)
-                return ResponseResult.Failure<OrderDTO>("Discount must be percentage range of 0.00 to 1.00");
+                throw new ArgumentOutOfRangeException("Discount", "Discount must be percentage range of 0.00 to 1.00");
 
             var listOrderDetail = _mapper.Map<List<OrderDetail>>(addOrder.OrderDetails);
             int orderQuantity = 0;
@@ -123,17 +126,8 @@ namespace SmileShop.Services
                 int balance;
                 decimal price = 0;
 
-                try
-                {
-                    (balance, price) = await _stockServices.ProductIsSufficient(listOrderDetail[i].ProductId, new ProductStockAddDTO { Debit = 0, Credit = listOrderDetail[i].Quantity });
-                }
-                catch (ArgumentNullException anEx)
-                {
-                    //Return fail if Product is insufficient
-                    //EF will not savechange.
-                    return ResponseResult.Failure<OrderDTO>(anEx.Message);
-                }
-
+                (balance, price) = await _stockServices.ProductIsSufficient(listOrderDetail[i].ProductId, new ProductStockAddDTO { Debit = 0, Credit = listOrderDetail[i].Quantity });
+                
                 listOrderDetail[i].Price = price;
                 listOrderDetail[i].DiscountPrice = price * addOrder.Discount;
                 orderQuantity += listOrderDetail[i].Quantity;
@@ -177,12 +171,15 @@ namespace SmileShop.Services
         public async Task<ServiceResponse<OrderDTO>> Delete(int OrderId)
         {
 
+            if (OrderId <= 0)
+                throw new ArgumentOutOfRangeException("OrderId", "Id must be greater than 0.");
+
             // Quering data
             var result = await _dbContext.Order.FindAsync(OrderId);
 
             // Return error if count is 0
             if (result is null)
-                return ResponseResult.Failure<OrderDTO>("Order is not Exist");
+                throw new InvalidOperationException("Order is not Exist");
 
             var orderDetails = await _dbContext.OrderDetail
                                                .Where(od => od.OrderId == OrderId)

@@ -63,7 +63,7 @@ namespace SmileShop.Services
 
             // Return error if count is 0
             if (result.Count == 0)
-                return ResponseResultWithPagination.Failure<List<ProductDTO>>("Product is not Exist");
+                throw new InvalidOperationException("Product is not Exist");
 
             // Mapping
             var dto = _mapper.Map<List<ProductDTO>>(result);
@@ -72,34 +72,11 @@ namespace SmileShop.Services
             return ResponseResultWithPagination.Success<List<ProductDTO>>(dto, paginationResult);
         }
 
-        public async Task<ServiceResponse<List<ProductDTO>>> GetAll(ProductFilterDTO productFilter = null)
-        {
-            // Quering data
-            var query = _dbContext.Product.AsQueryable();
-
-
-            // Filtering data
-            query = filter(query, productFilter);
-
-            // Generate result
-            var result = await query.Include(entity => entity.CreatedByUser).Include(entity => entity.Group).ToListAsync();
-
-            // Return error if count is 0
-            if (result.Count == 0)
-                return ResponseResult.Failure<List<ProductDTO>>("Product is not Exist");
-
-            // Mapping
-            var dto = _mapper.Map<List<ProductDTO>>(result);
-
-            // Return Results
-            return ResponseResult.Success<List<ProductDTO>>(dto);
-        }
-
         public async Task<ServiceResponse<ProductDTO>> Get(int productId)
         {
             // Id must be greater than 0
             if (productId <= 0)
-                return ResponseResult.Failure<ProductDTO>("Id must be greater than 0");
+                throw new ArgumentOutOfRangeException("ID", "Id must be greater than 0");
 
             // Gettering data
             var data = await _dbContext.Product
@@ -110,7 +87,7 @@ namespace SmileShop.Services
 
             // If no data return error
             if (data is null)
-                return ResponseResult.Failure<ProductDTO>("Product Group is not Exist");
+                throw new InvalidOperationException("Product is not Exist");
 
             var dto = _mapper.Map<ProductDTO>(data);
 
@@ -120,12 +97,12 @@ namespace SmileShop.Services
         {
             // User must be presented to perform this method
             if (String.IsNullOrEmpty(GetUserId()))
-                return ResponseResult.Failure<ProductDTO>("User must be presented to perform this method");
+                throw new UnauthorizedAccessException("User must be presented to perform this method");
 
             var productGroup = await _dbContext.ProductGroup.FindAsync(addProduct.GroupId);
 
             if(productGroup is null)
-                return ResponseResult.Failure<ProductDTO>("Invalid Product Group");
+                throw new InvalidOperationException("Product Group is not Exist");
 
             // Add Products
             Product product = _mapper.Map<Product>(addProduct);
@@ -153,7 +130,7 @@ namespace SmileShop.Services
 
             // Id must be greater than 0
             if (productId <= 0)
-                return ResponseResult.Failure<ProductDTO>("Id must be greater than 0");
+                throw new ArgumentOutOfRangeException("ID", "Id must be greater than 0");
 
             // Gettering data
             var data = await _dbContext.Product
@@ -164,7 +141,7 @@ namespace SmileShop.Services
 
             // If no data return error
             if (data is null)
-                return ResponseResult.Failure<ProductDTO>("Product is not Exist");
+                throw new InvalidOperationException("Product is not Exist");
 
             // Set data
             _mapper.Map(editProduct, data);
@@ -182,7 +159,7 @@ namespace SmileShop.Services
         {
             // Id must be greater than 0
             if (productId <= 0)
-                return ResponseResult.Failure<ProductDTO>("Id must be greater than 0");
+                throw new ArgumentOutOfRangeException("ID", "Id must be greater than 0");
 
             // Gettering data
             var data = await _dbContext.Product
@@ -193,7 +170,7 @@ namespace SmileShop.Services
 
             // If no data return error
             if (data is null)
-                return ResponseResult.Failure<ProductDTO>("Product is not Exist");
+                throw new InvalidOperationException("Product is not Exist");
 
             // Delete data
             _dbContext.Product.Remove(data);

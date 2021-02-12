@@ -121,7 +121,7 @@ namespace SmileShop.Services
         {
             // Id must be greater than 0
             if (productGroupId <= 0)
-                return ResponseResult.Failure<ProductGroupDTO>("Id must be greater than 0");
+                throw new ArgumentOutOfRangeException("Product Group Id", "Id must be greater than 0");
 
             // Gettering data
             var data = await _dbContext.ProductGroup

@@ -35,6 +35,7 @@ namespace SmileShop.Test
         /// it must return suscess with error message
         /// </summary>
         [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException), "Product Group is not Exist")]
         public async Task GetAll_NoData_ReturnErrorMessage()
         {
             /// ===== Arrange =====
@@ -45,8 +46,6 @@ namespace SmileShop.Test
 
             var httpContext = new Mock<IHttpContextAccessor>();
             var http = new DefaultHttpContext();
-            // var fakeTenantId = "abcd";
-            // context.Request.Headers["Tenant-ID"] = fakeTenantId;
             httpContext.Setup(_ => _.HttpContext).Returns(http);
 
             var pagination = new PaginationDto();
@@ -58,9 +57,7 @@ namespace SmileShop.Test
             var result = await service.GetAll(pagination, filter, order);
 
             /// ==== Assert =====
-            Assert.IsFalse(result.IsSuccess);
-            Assert.IsNull(result.Data);
-            Assert.AreEqual(result.Message, "Product Group is not Exist");
+            /// Expect Exception
         }
 
         // GetAll_HaveData_ReturnResultWithPagination
@@ -78,12 +75,8 @@ namespace SmileShop.Test
             // Add Mockup data
             await ProductGroupData(context, mapper, httpContext.Object);
 
-            //Console.WriteLine("Original Data : " + await context1.ProductGroup.CountAsync());
-
             // Prepare instance for testing
             var actContext = BuildContext(dbName);
-
-            //Console.WriteLine("Fetching Data : " + await context2.ProductGroup.CountAsync());
 
             PaginationDto pagination = new PaginationDto { RecordsPerPage = 2 };
             PaginationDto pagination2 = new PaginationDto { Page = 2, RecordsPerPage = 2 };
@@ -97,37 +90,51 @@ namespace SmileShop.Test
 
             var result1 = await service.GetAll(pagination, filter, order);
             var result2 = await service.GetAll(pagination2, filter, order);
-            var result3 = await service.GetAll(pagination3, filter, order);
-
-            /* 
-             * Console.WriteLine();
-             * Console.WriteLine("Pagination : ");
-             * Console.WriteLine(ClassToJsonString(pagination));
-             * Console.WriteLine("Filter : ");
-             * Console.WriteLine(filter);
-             * Console.WriteLine("Order : ");
-             * Console.WriteLine(ClassToJsonString(order));
-             * Console.WriteLine();
-             * 
-             * Console.WriteLine("Result : ");
-             * Console.WriteLine(ClassToJsonString(result));
-             */
-
 
             /// ===== Assert =====
+            // Result 1 : Return data on 1st Page
             Assert.AreEqual(result1.IsSuccess, true);
             Assert.AreEqual(result1.Data[0].Id, 1);
             Assert.IsNotNull(result1.CurrentPage);
             Assert.IsNotNull(result1.PageIndex);
 
-            // Check on 2nd Page
+            // Result 2 : Return data on 2nd Page
             Assert.AreEqual(result2.IsSuccess, true);
             Assert.AreEqual(result2.Data[0].Id, 3);
 
-            // Check on Page Doesn't exist
-            Assert.AreEqual(result3.IsSuccess, false);
-            Assert.IsNull(result3.Data);
-            Assert.AreEqual(result3.Message, "Product Group is not Exist");
+        }
+
+        // GetAll_ReachUnexistPage_ReturnResultWithPagination
+        [ExpectedException(typeof(InvalidOperationException), "Product Group is not Exist")]
+        public async Task GetAll_ReachUnexistPage_ReturnResultWithPagination()
+        {
+            /// ===== Arrange =====
+            var dbName = Guid.NewGuid().ToString();
+            var context = BuildContext(dbName);
+            var mapper = BuildMap();
+            var httpContext = new Mock<IHttpContextAccessor>();
+            var http = new DefaultHttpContext();
+            httpContext.Setup(_ => _.HttpContext).Returns(http);
+
+            // Add Mockup data
+            await ProductGroupData(context, mapper, httpContext.Object);
+
+            // Prepare instance for testing
+            var actContext = BuildContext(dbName);
+
+            PaginationDto pagination = new PaginationDto { Page = 5, RecordsPerPage = 2 };
+
+            string filter = null;
+            DataOrderDTO order = new DataOrderDTO();
+
+            /// ===== Act =====
+            var service = new ProductGroupServices(actContext, mapper, httpContext.Object);
+
+            var result = await service.GetAll(pagination, filter, order);
+
+            /// ===== Assert =====
+            // Result : Check on Page Doesn't exist
+            // Expect Exception
         }
 
         // GetAll_CanFilterByName_ReturnFilteredListOfProductGroup
@@ -151,7 +158,6 @@ namespace SmileShop.Test
 
             string filter1 = "Test Product Group 3";
             string filter2 = "G";
-            string filter3 = Guid.NewGuid().ToString();
 
             var order = new DataOrderDTO();
 
@@ -164,8 +170,6 @@ namespace SmileShop.Test
 
             var result = await service.GetAll(pagination, filter1, order);
             var result2 = await service.GetAll(pagination, filter2, order);
-            var result3 = await service.GetAll(pagination, filter3, order);
-
 
             /// ===== Assert =====
 
@@ -177,18 +181,55 @@ namespace SmileShop.Test
             // Result 2 : Like cause filter
             Assert.IsTrue(result2.IsSuccess);
             Assert.IsTrue(result2.Data[0].Name.Contains(filter2));
-            Assert.IsTrue(result2.Data[result2.Data.Count-1].Name.Contains(filter2));
+            Assert.IsTrue(result2.Data[result2.Data.Count - 1].Name.Contains(filter2));
             Assert.AreEqual(result2.Data.Count, 5);
 
-            // Result 3 : Filter that not contain in Data
-            Assert.IsFalse(result3.IsSuccess);
-            Assert.IsNull(result3.Data);
-            Assert.AreEqual(result3.Message, "Product Group is not Exist");
+        }
+
+        // GetAll_FilterIsNotContainInDatabase_ReturnError
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException), "Product Group is not Exist")]
+        public async Task GetAll_FilterIsNotContainInDatabase_ReturnError()
+        {
+
+            /// ===== Arrange =====
+            var dbName = Guid.NewGuid().ToString();
+            var context = BuildContext(dbName);
+            var mapper = BuildMap();
+            var httpContext = new Mock<IHttpContextAccessor>();
+            var http = new DefaultHttpContext();
+            httpContext.Setup(_ => _.HttpContext).Returns(http);
+
+            // Add Mockup data
+            await ProductGroupData(context, mapper, httpContext.Object);
+
+            // Prepare Query
+            var pagination = new PaginationDto();
+
+            string filter = Guid.NewGuid().ToString();
+
+            var order = new DataOrderDTO();
+
+            // New context
+            var actContext = BuildContext(dbName);
+
+            /// ===== Act =====
+
+            var service = new ProductGroupServices(actContext, mapper, httpContext.Object);
+            var result = await service.GetAll(pagination, filter, order);
+
+
+            /// ===== Assert =====
+
+
+            // Result : Filter that not contain in Data
+            // Expect Exception
         }
 
         // GetList_NoData_ReturnErrorMessage
         [TestMethod]
-        public async Task GetList_NoData_ReturnErrorMessage()
+        [ExpectedException(typeof(InvalidOperationException), "Product Group is not Exist")]
+        public async Task GetList_NoData_ReturnError()
         {
 
             // Arrange
@@ -202,26 +243,43 @@ namespace SmileShop.Test
             // var fakeTenantId = "abcd";
             // context.Request.Headers["Tenant-ID"] = fakeTenantId;
             httpContext.Setup(_ => _.HttpContext).Returns(http);
-            
 
 
             // Act
             var service = new ProductGroupServices(context, mapper, httpContext.Object);
-            var result1 = await service.GetList("");
-            var result2 = await service.GetList("Group");
+            var result = await service.GetList("Group");
 
             // Assert
 
-            // Result 1 : No filter
-            Assert.IsFalse(result1.IsSuccess);
-            Assert.IsNull(result1.Data);
-            Assert.AreEqual(result1.Message, "This query must provided filter");
+            // Filter is presented, but there is not have data.
+            // Expect Exception
+        }
+
+        // GetList_HaveNoFilter_ReturnError
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public async Task GetList_HaveNoFilter_ReturnError()
+        {
+
+            // Arrange
+            var dbName = Guid.NewGuid().ToString();
+            var context = BuildContext(dbName);
+            var mapper = BuildMap();
 
 
-            // Result 2 : Filter is presented, but there is not have data.
-            Assert.IsFalse(result2.IsSuccess);
-            Assert.IsNull(result2.Data);
-            Assert.AreEqual(result2.Message, "Product Group is not Exist");
+            var httpContext = new Mock<IHttpContextAccessor>();
+            var http = new DefaultHttpContext();
+            httpContext.Setup(_ => _.HttpContext).Returns(http);
+
+
+            // Act
+            var service = new ProductGroupServices(context, mapper, httpContext.Object);
+            var result = await service.GetList("");
+
+            // Assert
+
+            // Filter is presented, but there is not have data.
+            // Expect Exception
         }
 
         // GetList_HaveDataAndFilter_ReturnFilteredListOfProductGroup <- (Merge) GetList_NoFilter_ReturnErrorMessage
@@ -229,7 +287,7 @@ namespace SmileShop.Test
         public async Task GetList_HaveDataAndFilter_ReturnFilteredListOfProductGroup()
         {
 
-            // Arrange
+            /// ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -243,43 +301,108 @@ namespace SmileShop.Test
 
             var actContext = BuildContext(dbName);
 
-            // Act
+            var result1 = new ServiceResponse<List<ProductGroupDTO>>();
+            var result2 = new ServiceResponse<List<ProductGroupDTO>>();
+            var result3 = new ServiceResponse<List<ProductGroupDTO>>();
+
+            bool expectEx1 = false;
+            bool expectEx2 = false;
+            bool expectEx3 = false;
+
+            /// ===== Act =====
             var service = new ProductGroupServices(actContext, mapper, httpContext.Object);
-            var result1 = await service.GetList("");
-            var result2 = await service.GetList("Group");
-            var result3 = await service.GetList("Group 3");
-            var result4 = await service.GetList(Guid.NewGuid().ToString());
 
-            // Assert
+            try
+            {
+                result1 = await service.GetList("Group");
+            }
+            catch (Exception)
+            {
+                expectEx1 = true;
+                throw;
+            }
 
-            // Result 1 : No filter
-            Assert.IsFalse(result1.IsSuccess);
-            Assert.IsNull(result1.Data);
-            Assert.AreEqual(result1.Message, "This query must provided filter");
+            try
+            {
+                result2 = await service.GetList("Group 3");
+            }
+            catch (Exception)
+            {
+                expectEx2 = true;
+                throw;
+            }
+
+            try
+            {
+                result3 = await service.GetList(Guid.NewGuid().ToString());
+            }
+            catch (InvalidOperationException)
+            {
+                expectEx3 = true;
+            }
+            catch (Exception)
+            {
+                expectEx3 = true;
+                throw;
+            }
 
 
-            // Result 2 : Filter is presented, And serach for "Group"
+            /// ===== Assert =====
+
+
+            // Result 1 : Filter is presented, And serach for "Group"
+            Assert.IsFalse(expectEx1);
+            Assert.IsTrue(result1.IsSuccess);
+            Assert.AreEqual(result1.Data.Count, 5);
+            Assert.IsTrue(result1.Data[0].Name.Contains("Group"));
+            Assert.IsTrue(result1.Data[2].Name.Contains("Group"));
+
+            // Result 2 : Filter is presented, And serach for "Group 3"
+            Assert.IsFalse(expectEx2);
             Assert.IsTrue(result2.IsSuccess);
-            Assert.AreEqual(result2.Data.Count, 5);
-            Assert.IsTrue(result2.Data[0].Name.Contains("Group"));
-            Assert.IsTrue(result2.Data[2].Name.Contains("Group"));
+            Assert.AreEqual(result2.Data.Count, 1);
+            Assert.IsTrue(result2.Data[0].Name.Contains("Group 3"));
 
-            // Result 3 : Filter is presented, And serach for "Group 3"
-            Assert.IsTrue(result3.IsSuccess);
-            Assert.AreEqual(result3.Data.Count, 1);
-            Assert.IsTrue(result3.Data[0].Name.Contains("Group 3"));
+            // Result 3 : Filter is presented, And serach for Random value that not exist in the data
+            Assert.IsTrue(expectEx3);
+            Assert.IsNull(result3.Data);
 
-            // Result 4 : Filter is presented, And serach for Random value that not exist in the data
-            Assert.IsFalse(result4.IsSuccess);
-            Assert.IsNull(result4.Data);
-            Assert.AreEqual(result4.Message, "Product Group is not Exist");
+
+        }
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException), "Product Group is not Exist")]
+        public async Task GetList_FilterIsNotContainInDatabase_ReturnError()
+        {
+
+            /// ===== Arrange =====
+            var dbName = Guid.NewGuid().ToString();
+            var context = BuildContext(dbName);
+            var mapper = BuildMap();
+
+
+            var httpContext = new Mock<IHttpContextAccessor>();
+            var http = new DefaultHttpContext();
+            httpContext.Setup(_ => _.HttpContext).Returns(http);
+
+            await ProductGroupData(context, mapper, httpContext.Object);
+
+            var actContext = BuildContext(dbName);
+
+            // ===== Act =====
+            var service = new ProductGroupServices(actContext, mapper, httpContext.Object);
+
+            var result = await service.GetList(Guid.NewGuid().ToString());
+
+            /// ===== Assert =====
+            // Result : Used filter that not contain in database
+            // Expect Exception
 
         }
 
         // Get_NoData_ReturnErrorMessage
         // + (merge) Get_ProductIdIsLessOrEqualZero_ReturnErrorMessage
         [TestMethod]
-        public async Task Get_NoData_ReturnErrorMessage()
+        public async Task Get_ProductGroupValidation_ReturnError()
         {
 
             /// ===== Arrange =====
@@ -295,27 +418,50 @@ namespace SmileShop.Test
             var productGroupId2 = 0;
             var productGroupId3 = 1;
 
+            bool expectEx1 = false;
+            bool expectEx2 = false;
+            bool expectEx3 = false;
+
             /// ===== Act =====
             var service = new ProductGroupServices(context, mapper, httpContext.Object);
 
-            var result1 = await service.Get(productGroupId1);
-            var result2 = await service.Get(productGroupId2);
-            var result3 = await service.Get(productGroupId3);
+            try
+            {
+                await service.Get(productGroupId1);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                expectEx1 = true;
+            }
+
+            try
+            {
+                await service.Get(productGroupId2);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                expectEx2 = true;
+            }
+
+            try
+            {
+                await service.Get(productGroupId3);
+            }
+            catch (InvalidOperationException)
+            {
+                expectEx3 = true;
+            }
 
             /// ==== Assert =====
 
             // Result 1 : Id (-5) must be greater than 0, then error
-            Assert.IsFalse(result1.IsSuccess);
-            Assert.AreEqual(result1.Message, "Id must be greater than 0");
+            Assert.IsTrue(expectEx1);
 
+            // Result 2 : Id (0) must be greater than 0, then error
+            Assert.IsTrue(expectEx2);
 
-            // Result 1 : Id (0) must be greater than 0, then error
-            Assert.IsFalse(result2.IsSuccess);
-            Assert.AreEqual(result2.Message, "Id must be greater than 0");
-
-            // Result 3 : Id must be greater than 0, then error
-            Assert.IsFalse(result3.IsSuccess);
-            Assert.AreEqual(result3.Message, "Product Group is not Exist");
+            // Result 3 : Id must be greater than 0 but no data in database, then error
+            Assert.IsTrue(expectEx3);
         }
 
         // Get_HaveDataAndProductID_ReturnProductGroupWithSameId
@@ -339,31 +485,81 @@ namespace SmileShop.Test
             var productGroupId1 = -5;
             var productGroupId2 = 1;
             var productGroupId3 = 9;
+            var productGroupId4 = 4;
 
+            bool expectEx1 = false;
+            bool expectEx2 = false;
+            bool expectEx3 = false;
+            bool expectEx4 = false;
+
+            ServiceResponse<ProductGroupDTO> result1 = new ServiceResponse<ProductGroupDTO>();
+            ServiceResponse<ProductGroupDTO> result2 = new ServiceResponse<ProductGroupDTO>();
+            ServiceResponse<ProductGroupDTO> result3 = new ServiceResponse<ProductGroupDTO>();
+            ServiceResponse<ProductGroupDTO> result4 = new ServiceResponse<ProductGroupDTO>();
 
             var actContext = BuildContext(dbName);
 
             /// ===== Act =====
             var service = new ProductGroupServices(actContext, mapper, httpContext.Object);
 
-            var result1 = await service.Get(productGroupId1);
-            var result2 = await service.Get(productGroupId2);
-            var result3 = await service.Get(productGroupId3);
+            try
+            {
+                result1 = await service.Get(productGroupId1);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                expectEx1 = true;
+            }
+
+            try
+            {
+                result2 = await service.Get(productGroupId2);
+            }
+            catch (Exception)
+            {
+                expectEx2 = true;
+            }
+
+
+            try
+            {
+                result3 = await service.Get(productGroupId3);
+            }
+            catch (InvalidOperationException)
+            {
+                expectEx3 = true;
+            }
+
+            try
+            {
+                result4 = await service.Get(productGroupId4);
+            }
+            catch (Exception)
+            {
+                expectEx4 = true;
+            }
 
             /// ==== Assert =====
 
             // Result 1 : Id (-5) must be greater than 0, then error
-            Assert.IsFalse(result1.IsSuccess);
-            Assert.AreEqual(result1.Message, "Id must be greater than 0");
+            Assert.IsNull(result1.Data);
+            Assert.IsTrue(expectEx1);
 
-
-            // Result 1 :  Have a data & ProductID, It's must return ProductGroup With Same Id
+            // Result 2 :  Have a data & ProductID, It's must return ProductGroup With Same Id
             Assert.IsTrue(result2.IsSuccess);
+            Assert.IsNotNull(result2.Data);
             Assert.AreEqual(result2.Data.Id, productGroupId2);
+            Assert.IsFalse(expectEx2);
 
             // Result 3 : Have a data but Id is not exist, Return error message
-            Assert.IsFalse(result3.IsSuccess);
-            Assert.AreEqual(result3.Message, "Product Group is not Exist");
+            Assert.IsNull(result3.Data);
+            Assert.IsTrue(expectEx3);
+
+            // Result 4 :  Have a data & ProductID, It's must return ProductGroup With Same Id
+            Assert.IsTrue(result4.IsSuccess);
+            Assert.IsNotNull(result4.Data);
+            Assert.AreEqual(result4.Data.Id, productGroupId4);
+            Assert.IsFalse(expectEx4);
         }
 
         // Add_NoLoginUser_ReturnErrorMessage
@@ -382,12 +578,22 @@ namespace SmileShop.Test
 
             var addProductGroup = new ProductGroupAddDTO { Name = "Test" };
 
+            bool expectEx = false;
+
             /// ===== Act =====
             var service = new ProductGroupServices(context, mapper, httpContext.Object);
-            var result = await service.Add(addProductGroup);
+
+            try
+            {
+                var result = await service.Add(addProductGroup);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                expectEx = true;
+            }
 
             /// ===== Assert =====
-            
+
             // Check that database has no new record
             var resultContext = BuildContext(dbName);
             var recordCount = await resultContext.ProductGroup.CountAsync();
@@ -395,8 +601,7 @@ namespace SmileShop.Test
             Assert.AreEqual(recordCount, 0);
 
             // Result : Return an error message
-            Assert.IsFalse(result.IsSuccess);
-            Assert.AreEqual(result.Message, "User must be presented to perform this method");
+            Assert.IsTrue(expectEx);
         }
 
         // Add_SentBlankProductGroupName_ReturnErrorMessage
@@ -414,10 +619,19 @@ namespace SmileShop.Test
 
             var addProductGroup = new ProductGroupAddDTO { Name = "" };
 
+            bool expectEx = false;
+
             /// ===== Act =====
             var service = new ProductGroupServices(context, mapper, httpContext.Object);
-            var result = await service.Add(addProductGroup);
 
+            try
+            {
+                var result = await service.Add(addProductGroup);
+            }
+            catch (ArgumentNullException)
+            {
+                expectEx = true;
+            }
 
             /// ===== Assert =====
 
@@ -428,8 +642,7 @@ namespace SmileShop.Test
             Assert.AreEqual(recordCount, 0);
 
             // Result : Return an error message
-            Assert.IsFalse(result.IsSuccess);
-            Assert.AreEqual(result.Message, "Please fill Product Group's Name");
+            Assert.IsTrue(expectEx);
         }
 
         // Add_WithData_ReturnAddedResult
@@ -481,6 +694,7 @@ namespace SmileShop.Test
 
         // Edit_SentBlankProductGroupName_ReturnErrorMessage
         [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
         public async Task Edit_SentBlankProductGroupName_ReturnErrorMessage()
         {
 
@@ -503,9 +717,7 @@ namespace SmileShop.Test
             var result = await service.Edit(productGroupId, editProductGroup);
 
             /// ===== Assert =====
-
-            Assert.IsFalse(result.IsSuccess);
-            Assert.AreEqual(result.Message, "Please fill Product Group's Name");
+            // Except Exception
         }
 
         // Edit_ProductIdIsLessOrEqualZero_ReturnErrorMessage
@@ -522,28 +734,45 @@ namespace SmileShop.Test
             var httpContext = new Mock<IHttpContextAccessor>();
             var http = new DefaultHttpContext();
             httpContext.Setup(_ => _.HttpContext).Returns(http);
-            
-            var editProductGroup = new ProductGroupAddDTO {};
+
+            var editProductGroup = new ProductGroupAddDTO { };
+
+            bool expectEx1 = false;
+            bool expectEx2 = false;
 
             /// ===== Act =====
 
             var service = new ProductGroupServices(context, mapper, httpContext.Object);
-            var result1 = await service.Edit(0, editProductGroup);
-            var result2 = await service.Edit(-10, editProductGroup);
+            try
+            {
+                await service.Edit(0, editProductGroup);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                expectEx1 = true;
+            }
+
+            try
+            {
+                await service.Edit(-10, editProductGroup);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                expectEx2 = true;
+            }
 
             /// ===== Assert =====
 
             // Result 1 : When Id = 0
-            Assert.IsFalse(result1.IsSuccess);
-            Assert.AreEqual(result1.Message, "Id must be greater than 0");
+            Assert.IsTrue(expectEx1);
 
             // Result 1 : When Id = -10
-            Assert.IsFalse(result2.IsSuccess);
-            Assert.AreEqual(result2.Message, "Id must be greater than 0");
+            Assert.IsTrue(expectEx2);
         }
 
         // Edit_NoData_ReturnErrorMessage
         [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
         public async Task Edit_NoData_ReturnErrorMessage()
         {
 
@@ -567,8 +796,7 @@ namespace SmileShop.Test
             /// ===== Assert =====
 
             // No data in database must return an error message
-            Assert.IsFalse(result.IsSuccess);
-            Assert.AreEqual(result.Message, "Product Group is not Exist");
+            // Expect Exception
         }
 
         // Edit_WithData_ReturnEditedResult
@@ -597,13 +825,23 @@ namespace SmileShop.Test
             var editProductGroup2 = new ProductGroupAddDTO { Name = "Test Product Group Edit 2" };
             var editProductGroup3 = new ProductGroupAddDTO { Name = "Test Product Group Edit 3" };
 
+            bool expectEx1 = false;
+            bool expectEx2 = false;
+            bool expectEx3 = false;
+
+            var result1 = new ServiceResponse<ProductGroupDTO>();
+            var result2 = new ServiceResponse<ProductGroupDTO>();
+            var result3 = new ServiceResponse<ProductGroupDTO>();
+
             // Arrange data for later comparison.
             var dataProductGroup1 = await context.ProductGroup
                                                  .Where(x => x.Id == productGroupId1)
                                                  .FirstOrDefaultAsync();
+
             var dataProductGroup2 = await context.ProductGroup
                                                  .Where(x => x.Id == productGroupId2)
                                                  .FirstOrDefaultAsync();
+
             var dataProductGroup3 = await context.ProductGroup
                                                  .Where(x => x.Id == productGroupId3)
                                                  .FirstOrDefaultAsync();
@@ -613,9 +851,35 @@ namespace SmileShop.Test
             var actContext = BuildContext(dbName);
 
             var service = new ProductGroupServices(actContext, mapper, httpContext.Object);
-            var result1 = await service.Edit(productGroupId1, editProductGroup1);
-            var result2 = await service.Edit(productGroupId2, editProductGroup2);
-            var result3 = await service.Edit(productGroupId3, editProductGroup3);
+
+            try
+            {
+                result1 = await service.Edit(productGroupId1, editProductGroup1);
+            }
+            catch (Exception)
+            {
+                expectEx1 = true;
+                throw;
+            }
+
+            try
+            {
+                result2 = await service.Edit(productGroupId2, editProductGroup2);
+            }
+            catch (Exception)
+            {
+                expectEx2 = true;
+                throw;
+            }
+
+            try
+            {
+                result3 = await service.Edit(productGroupId3, editProductGroup3);
+            }
+            catch (InvalidOperationException)
+            {
+                expectEx3 = true;
+            }
 
             /// ===== Assert =====
 
@@ -644,6 +908,8 @@ namespace SmileShop.Test
             Assert.AreNotEqual(result1.Data.Name, dataProductGroup1.Name);
             Assert.AreEqual(result1.Data.Name, chkProductGroup1.Name);
 
+            Assert.IsFalse(expectEx1);
+
             // Result 2 : Edit ProductGroup (ID 3) Must be changed
             Assert.IsTrue(result2.IsSuccess);
             Assert.AreEqual(result2.Message, $"Product Group ({editProductGroup2.Name}) have been edited successfully");
@@ -656,10 +922,11 @@ namespace SmileShop.Test
             Assert.AreNotEqual(result2.Data.Name, dataProductGroup2.Name);
             Assert.AreEqual(result2.Data.Name, chkProductGroup2.Name);
 
+            Assert.IsFalse(expectEx2);
 
             // Result 3 : Edit ProductGroup (ID 99) Must be return an error message
-            Assert.IsFalse(result3.IsSuccess);
-            Assert.AreEqual(result3.Message, "Product Group is not Exist");
+            Assert.IsNull(result3.Data);
+            Assert.IsTrue(expectEx3);
 
             Assert.IsNull(dataProductGroup3);
             Assert.IsNull(chkProductGroup3);
@@ -686,26 +953,57 @@ namespace SmileShop.Test
             int productGroupId2 = 0;
             int productGroupId3 = -21;
 
+            bool expectEx1 = false;
+            bool expectEx2 = false;
+            bool expectEx3 = false;
+
             /// ===== Act =====
+            var result1 = new ServiceResponse<ProductGroupDTO>();
+            var result2 = new ServiceResponse<ProductGroupDTO>();
+            var result3 = new ServiceResponse<ProductGroupDTO>();
 
             var service = new ProductGroupServices(context, mapper, httpContext.Object);
-            var result1 = await service.Delete(productGroupId1);
-            var result2 = await service.Delete(productGroupId2);
-            var result3 = await service.Delete(productGroupId3);
+            try
+            {
+                result1 = await service.Delete(productGroupId1);
+            }
+            catch (InvalidOperationException)
+            {
+                expectEx1 = true;
+            }
+
+            try
+            {
+                result2 = await service.Delete(productGroupId2);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                expectEx2 = true;
+            }
+
+            try
+            {
+                result3 = await service.Delete(productGroupId3);
+
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                expectEx3 = true;
+            }
 
             /// ===== Assert =====
 
             // Result 1 : No data in database must return an error message
-            Assert.IsFalse(result1.IsSuccess);
-            Assert.AreEqual(result1.Message, "Product Group is not Exist");
+            Assert.IsNull(result1.Data);
+            Assert.IsTrue(expectEx1);
 
             // Result 2 : if ID (0) not grater than 0,  return an error message
-            Assert.IsFalse(result2.IsSuccess);
-            Assert.AreEqual(result2.Message, "Id must be greater than 0");
+            Assert.IsNull(result2.Data);
+            Assert.IsTrue(expectEx2);
 
             // Result 3 : if ID (-21) not grater than 0,  return an error message
-            Assert.IsFalse(result2.IsSuccess);
-            Assert.AreEqual(result2.Message, "Id must be greater than 0");
+            Assert.IsNull(result3.Data);
+            Assert.IsTrue(expectEx3);
         }
 
         // Delete_WithID_ReturnDeletedResult
@@ -741,15 +1039,52 @@ namespace SmileShop.Test
             var dataProductGroup3 = await context.ProductGroup
                                                  .Where(x => x.Id == productGroupId3)
                                                  .FirstOrDefaultAsync();
+            bool expectEx1 = false;
+            bool expectEx2 = false;
+            bool expectEx3 = false;
+
+            var result1 = new ServiceResponse<ProductGroupDTO>();
+            var result2 = new ServiceResponse<ProductGroupDTO>();
+            var result3 = new ServiceResponse<ProductGroupDTO>();
 
             /// ===== Act =====
 
             var actContext = BuildContext(dbName);
             var service = new ProductGroupServices(actContext, mapper, httpContext.Object);
 
-            var result1 = await service.Delete(productGroupId1);
-            var result2 = await service.Delete(productGroupId2);
-            var result3 = await service.Delete(productGroupId3);
+            try
+            {
+                result1 = await service.Delete(productGroupId1);
+            }
+            catch (Exception)
+            {
+                expectEx1 = true;
+                throw;
+            }
+
+            try
+            {
+                result2 = await service.Delete(productGroupId2);
+            }
+            catch (Exception)
+            {
+                expectEx2 = true;
+                throw;
+            }
+
+            try
+            {
+                result3 = await service.Delete(productGroupId3);
+            }
+            catch (InvalidOperationException)
+            {
+                expectEx3 = true;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
 
             /// ===== Assert =====
 
@@ -767,15 +1102,15 @@ namespace SmileShop.Test
                                                    .FirstOrDefaultAsync();
 
             // Result 1 : ProductGroup (Id 1) Must be delete and return with Response
-
+            Assert.IsFalse(expectEx1);
             Assert.IsTrue(result1.IsSuccess);
             Assert.AreEqual(result1.Message, $"Product Group ({dataProductGroup1.Name}) have been deleted successfully");
-            
+
             Assert.IsNotNull(dataProductGroup1);
             Assert.IsNull(chkProductGroup1);
 
             // Result 2 : ProductGroup (Id 4) Must be delete and return with Response
-
+            Assert.IsFalse(expectEx2);
             Assert.IsTrue(result2.IsSuccess);
             Assert.AreEqual(result2.Message, $"Product Group ({dataProductGroup2.Name}) have been deleted successfully");
 
@@ -784,9 +1119,7 @@ namespace SmileShop.Test
 
 
             // Result 3 : ProductGroup (Id 99) is not in the database, return with Error Message
-
-            Assert.IsFalse(result3.IsSuccess);
-            Assert.AreEqual(result3.Message, "Product Group is not Exist");
+            Assert.IsTrue(expectEx3);
 
             Assert.IsNull(dataProductGroup3);
             Assert.IsNull(chkProductGroup3);

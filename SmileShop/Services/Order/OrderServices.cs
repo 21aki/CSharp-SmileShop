@@ -84,7 +84,7 @@ namespace SmileShop.Services
         {
 
             if (OrderId <= 0)
-                throw new ArgumentOutOfRangeException("OrderId", "Id must be greater than 0.")
+                throw new ArgumentOutOfRangeException("OrderId", "Id must be greater than 0.");
 
             // Quering data
             var result = await _dbContext.Order

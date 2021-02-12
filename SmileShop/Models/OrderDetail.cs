@@ -13,7 +13,8 @@ namespace SmileShop.Models
         public decimal Price { get; set; }
         public decimal DiscountPrice { get; set; }
 
-        public virtual Order Order_ { get; set; }
-        public virtual Product Product_ { get; set; }
+
+        public virtual Order Order { get; set; }
+        public virtual Product Product { get; set; }
     }
 }

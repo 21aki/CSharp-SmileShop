@@ -30,23 +30,24 @@ namespace SmileShop.Data
             {
                 entity.HasKey(e => new { e.OrderId, e.ProductId });
 
-                entity.HasOne(d => d.Order_)
+                entity.HasOne(d => d.Order)
                     .WithMany(p => p.OrderDetails)
                     .HasForeignKey(d => d.OrderId)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_OrderDetail_Order");
 
-                entity.HasOne(d => d.Product_)
+                entity.HasOne(d => d.Product)
                     .WithMany(p => p.OrderDetails)
                     .HasForeignKey(d => d.ProductId)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_OrderDetail_Product");
+
             });
 
             modelBuilder.Entity<Product>(entity =>
             {
 
-                entity.HasOne(d => d.Group_)
+                entity.HasOne(d => d.Group)
                     .WithMany(p => p.Products)
                     .HasForeignKey(d => d.GroupId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
@@ -71,18 +72,19 @@ namespace SmileShop.Data
             {
                 entity.HasKey(e => new { e.Id });
 
-                entity.HasOne(d => d.Product_)
-                    .WithMany(p => p.Stock_)
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.Stock)
                     .HasForeignKey(d => d.ProductId)
                     .OnDelete(DeleteBehavior.Cascade)
-                    .HasConstraintName("FK_Inventory_Product");
+                    .HasConstraintName("FK_Stock_Product");
 
 
                 entity.HasOne(d => d.CreatedByUser)
-                    .WithMany(p => p.Stock_)
+                    .WithMany(p => p.Stock)
                     .HasForeignKey(d => d.CreatedByUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Inventory_User");
+                    .HasConstraintName("FK_Stock_User");
+
             });
 
             base.OnModelCreating(modelBuilder);

@@ -33,7 +33,7 @@ namespace SmileShop
 
             CreateMap<Product, ProductDTO>()
                 .ForMember(dto => dto.CreatedBy, e => e.MapFrom(p => p.CreatedByUser))
-                .ForMember(dto => dto.Group, e => e.MapFrom(p => p.Group_));
+                .ForMember(dto => dto.Group, e => e.MapFrom(p => p.Group));
 
 
             CreateMap<OrderAddDTO, Order>();
@@ -46,7 +46,12 @@ namespace SmileShop
                 .ForMember(dto => dto.CreatedBy, e => e.MapFrom(o => o.CreatedByUser))
                 .ForMember(dto => dto.OrderDetails, e=> e.MapFrom(o => o.OrderDetails));
 
-
+            CreateMap<Stock, ProductStockDTO>()
+                .ForMember(dto => dto.CreatedByUserId, e => e.MapFrom(s => s.CreatedByUser.Id))
+                .ForMember(dto => dto.CreatedByUserName, e => e.MapFrom(s => s.CreatedByUser.Username))
+                .ForMember(dto => dto.ProductName, e => e.MapFrom(s => s.Product.Name))
+                .ForMember(dtp => dtp.ProductGroupId, e => e.MapFrom(s => s.Product.GroupId))
+                .ForMember(dtp => dtp.ProductGroupName, e => e.MapFrom(s => s.Product.Group.Name));
         }
     }
 }

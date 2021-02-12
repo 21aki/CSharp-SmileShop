@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SmileShop.DTOs;
+using SmileShop.Models;
 using SmileShop.Services;
 using System;
 using System.Collections.Generic;
@@ -38,9 +39,17 @@ namespace SmileShop.Controllers
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] OrderAddDTO addOrder)
         {
-
-            var result = await _service.Add(addOrder);
-            return Ok(result);
+            try
+            {
+                var result = await _service.Add(addOrder);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                //Return fail if Product is insufficient
+                //EF will not savechange.
+                return Ok(ResponseResult.Failure<OrderDTO>(ex.Message));
+            }
         }
 
 

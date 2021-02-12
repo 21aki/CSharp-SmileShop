@@ -14,7 +14,7 @@ namespace SmileShop.DTOs
 
         public string Name { get; set; }
         public decimal Price { get; set; }
-        public int Stock { get; set; }
+        public int StockCount { get; set; }
         public UserDto CreatedBy { get; set; }
         public DateTime CreatedDate { get; set; }
         public bool Status { get; set; }

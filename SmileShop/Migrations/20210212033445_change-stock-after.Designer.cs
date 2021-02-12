@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmileShop.Data;
 
 namespace SmileShop.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20210212033445_change-stock-after")]
+    partial class changestockafter
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -174,6 +176,9 @@ namespace SmileShop.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Debit")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrderDetailId")
                         .HasColumnType("int");
 
                     b.Property<int>("ProductId")

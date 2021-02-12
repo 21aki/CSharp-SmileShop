@@ -37,8 +37,6 @@ namespace SmileShop.Services
         /// To create individual Order with OrderDetails
         public Task<ServiceResponse<OrderDTO>> Add(OrderAddDTO addOrder);
 
-        /// Check the selected product is sufficient to check out
-        public Task<(bool, decimal)> ProductIsSufficient(int productId, int amount);
 
         /// To delete individual Order with OrderDetails
         public Task<ServiceResponse<OrderDTO>> Delete(int OrderId);

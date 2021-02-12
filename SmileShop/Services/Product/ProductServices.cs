@@ -59,11 +59,11 @@ namespace SmileShop.Services
             var paginationResult = await _httpContext.HttpContext.InsertPaginationParametersInResponse(query, pagination.RecordsPerPage, pagination.Page);
 
             // Generate result
-            var result = await query.Paginate(pagination).Include(entity => entity.CreatedByUser).Include(entity => entity.Group_).ToListAsync();
+            var result = await query.Paginate(pagination).Include(entity => entity.CreatedByUser).Include(entity => entity.Group).ToListAsync();
 
             // Return error if count is 0
             if (result.Count == 0)
-                return ResponseResultWithPagination.Failure<List<ProductDTO>>("No Product in this query");
+                return ResponseResultWithPagination.Failure<List<ProductDTO>>("Product is not Exist");
 
             // Mapping
             var dto = _mapper.Map<List<ProductDTO>>(result);
@@ -82,11 +82,11 @@ namespace SmileShop.Services
             query = filter(query, productFilter);
 
             // Generate result
-            var result = await query.Include(entity => entity.CreatedByUser).Include(entity => entity.Group_).ToListAsync();
+            var result = await query.Include(entity => entity.CreatedByUser).Include(entity => entity.Group).ToListAsync();
 
             // Return error if count is 0
             if (result.Count == 0)
-                return ResponseResult.Failure<List<ProductDTO>>("No Product in this query");
+                return ResponseResult.Failure<List<ProductDTO>>("Product is not Exist");
 
             // Mapping
             var dto = _mapper.Map<List<ProductDTO>>(result);
@@ -104,13 +104,13 @@ namespace SmileShop.Services
             // Gettering data
             var data = await _dbContext.Product
                                        .Include(entity => entity.CreatedByUser)
-                                       .Include(entity => entity.Group_)
+                                       .Include(entity => entity.Group)
                                        .Where(x => x.Id == productId)
                                        .FirstOrDefaultAsync();
 
             // If no data return error
             if (data is null)
-                return ResponseResult.Failure<ProductDTO>("No Product Group in this query");
+                return ResponseResult.Failure<ProductDTO>("Product Group is not Exist");
 
             var dto = _mapper.Map<ProductDTO>(data);
 
@@ -127,15 +127,14 @@ namespace SmileShop.Services
             if(productGroup is null)
                 return ResponseResult.Failure<ProductDTO>("Invalid Product Group");
 
-            // Create & set data
+            // Add Products
             Product product = _mapper.Map<Product>(addProduct);
 
-            product.Group_ = productGroup;
+            product.Group = productGroup;
             product.CreatedByUserId = Guid.Parse(GetUserId());
             product.CreatedDate = Now();
-            product.Status = false;
+            product.Status = true;
 
-            // Add data
             await _dbContext.Product.AddAsync(product);
             await _dbContext.SaveChangesAsync();
 
@@ -159,13 +158,13 @@ namespace SmileShop.Services
             // Gettering data
             var data = await _dbContext.Product
                                        .Include(entity => entity.CreatedByUser)
-                                       .Include(entity => entity.Group_)
+                                       .Include(entity => entity.Group)
                                        .Where(x => x.Id == productId)
                                        .FirstOrDefaultAsync();
 
             // If no data return error
             if (data is null)
-                return ResponseResult.Failure<ProductDTO>("No Product in this query");
+                return ResponseResult.Failure<ProductDTO>("Product is not Exist");
 
             // Set data
             _mapper.Map(editProduct, data);
@@ -188,13 +187,13 @@ namespace SmileShop.Services
             // Gettering data
             var data = await _dbContext.Product
                                        .Include(entity => entity.CreatedByUser)
-                                       .Include(entity => entity.Group_)
+                                       .Include(entity => entity.Group)
                                        .Where(x => x.Id == productId)
                                        .FirstOrDefaultAsync();
 
             // If no data return error
             if (data is null)
-                return ResponseResult.Failure<ProductDTO>("No Product in this query");
+                return ResponseResult.Failure<ProductDTO>("Product is not Exist");
 
             // Delete data
             _dbContext.Product.Remove(data);

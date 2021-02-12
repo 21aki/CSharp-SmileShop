@@ -80,7 +80,7 @@ namespace SmileShop.Services
 
             // Return error if count is 0
             if (result.Count == 0)
-                return ResponseResultWithPagination.Failure<List<ProductGroupDTO>>("No Product Group in this query");
+                return ResponseResultWithPagination.Failure<List<ProductGroupDTO>>("Product Group is not Exist");
 
             // Mapping
             var dto = _mapper.Map<List<ProductGroupDTO>>(result);
@@ -108,7 +108,7 @@ namespace SmileShop.Services
 
             // Return error if count is 0
             if (result.Count == 0)
-                return ResponseResult.Failure<List<ProductGroupDTO>>("No Product Group in this query");
+                return ResponseResult.Failure<List<ProductGroupDTO>>("Product Group is not Exist");
 
             // Mapping
             var dto = _mapper.Map<List<ProductGroupDTO>>(result);
@@ -131,7 +131,7 @@ namespace SmileShop.Services
 
             // If no data return error
             if (data is null)
-                return ResponseResult.Failure<ProductGroupDTO>("No Product Group in this query");
+                return ResponseResult.Failure<ProductGroupDTO>("Product Group is not Exist");
 
             var dto = _mapper.Map<ProductGroupDTO>(data);
 
@@ -154,7 +154,7 @@ namespace SmileShop.Services
 
             data.CreatedByUserId = Guid.Parse(GetUserId());
             data.CreatedDate = Now();
-            data.Status = false;
+            data.Status = true;
 
             // Add data
             await _dbContext.ProductGroup.AddAsync(data);
@@ -187,7 +187,7 @@ namespace SmileShop.Services
 
             // If no data return error
             if (data is null)
-                return ResponseResult.Failure<ProductGroupDTO>("No Product Group in this query");
+                return ResponseResult.Failure<ProductGroupDTO>("Product Group is not Exist");
 
             // Set data
             _mapper.Map(addProductGroup, data);
@@ -217,7 +217,7 @@ namespace SmileShop.Services
 
             // If no data return error
             if (data is null)
-                return ResponseResult.Failure<ProductGroupDTO>("No Product Group in this query");
+                return ResponseResult.Failure<ProductGroupDTO>("Product Group is not Exist");
 
             // Remove data
             _dbContext.ProductGroup.Remove(data);

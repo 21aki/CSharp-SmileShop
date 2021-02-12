@@ -11,7 +11,7 @@ namespace SmileShop.Models
         public Product()
         {
             OrderDetails = new HashSet<OrderDetail>();
-            Stock_ = new HashSet<Stock>();
+            Stock = new HashSet<Stock>();
         }
 
         public int Id { get; set; }
@@ -26,10 +26,10 @@ namespace SmileShop.Models
         public DateTime CreatedDate { get; set; }
         public bool? Status { get; set; }
 
-        public virtual ProductGroup Group_ { get; set; }
+        public virtual ProductGroup Group { get; set; }
         public virtual User CreatedByUser { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
-        public virtual ICollection<Stock> Stock_ { get; set; }
+        public virtual ICollection<Stock> Stock { get; set; }
 
     }
 }

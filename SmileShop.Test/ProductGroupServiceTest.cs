@@ -60,7 +60,7 @@ namespace SmileShop.Test
             /// ==== Assert =====
             Assert.IsFalse(result.IsSuccess);
             Assert.IsNull(result.Data);
-            Assert.AreEqual(result.Message, "No Product Group in this query");
+            Assert.AreEqual(result.Message, "Product Group is not Exist");
         }
 
         // GetAll_HaveData_ReturnResultWithPagination
@@ -127,7 +127,7 @@ namespace SmileShop.Test
             // Check on Page Doesn't exist
             Assert.AreEqual(result3.IsSuccess, false);
             Assert.IsNull(result3.Data);
-            Assert.AreEqual(result3.Message, "No Product Group in this query");
+            Assert.AreEqual(result3.Message, "Product Group is not Exist");
         }
 
         // GetAll_CanFilterByName_ReturnFilteredListOfProductGroup
@@ -183,7 +183,7 @@ namespace SmileShop.Test
             // Result 3 : Filter that not contain in Data
             Assert.IsFalse(result3.IsSuccess);
             Assert.IsNull(result3.Data);
-            Assert.AreEqual(result3.Message, "No Product Group in this query");
+            Assert.AreEqual(result3.Message, "Product Group is not Exist");
         }
 
         // GetList_NoData_ReturnErrorMessage
@@ -221,7 +221,7 @@ namespace SmileShop.Test
             // Result 2 : Filter is presented, but there is not have data.
             Assert.IsFalse(result2.IsSuccess);
             Assert.IsNull(result2.Data);
-            Assert.AreEqual(result2.Message, "No Product Group in this query");
+            Assert.AreEqual(result2.Message, "Product Group is not Exist");
         }
 
         // GetList_HaveDataAndFilter_ReturnFilteredListOfProductGroup <- (Merge) GetList_NoFilter_ReturnErrorMessage
@@ -272,7 +272,7 @@ namespace SmileShop.Test
             // Result 4 : Filter is presented, And serach for Random value that not exist in the data
             Assert.IsFalse(result4.IsSuccess);
             Assert.IsNull(result4.Data);
-            Assert.AreEqual(result4.Message, "No Product Group in this query");
+            Assert.AreEqual(result4.Message, "Product Group is not Exist");
 
         }
 
@@ -315,7 +315,7 @@ namespace SmileShop.Test
 
             // Result 3 : Id must be greater than 0, then error
             Assert.IsFalse(result3.IsSuccess);
-            Assert.AreEqual(result3.Message, "No Product Group in this query");
+            Assert.AreEqual(result3.Message, "Product Group is not Exist");
         }
 
         // Get_HaveDataAndProductID_ReturnProductGroupWithSameId
@@ -363,7 +363,7 @@ namespace SmileShop.Test
 
             // Result 3 : Have a data but Id is not exist, Return error message
             Assert.IsFalse(result3.IsSuccess);
-            Assert.AreEqual(result3.Message, "No Product Group in this query");
+            Assert.AreEqual(result3.Message, "Product Group is not Exist");
         }
 
         // Add_NoLoginUser_ReturnErrorMessage
@@ -568,7 +568,7 @@ namespace SmileShop.Test
 
             // No data in database must return an error message
             Assert.IsFalse(result.IsSuccess);
-            Assert.AreEqual(result.Message, "No Product Group in this query");
+            Assert.AreEqual(result.Message, "Product Group is not Exist");
         }
 
         // Edit_WithData_ReturnEditedResult
@@ -659,7 +659,7 @@ namespace SmileShop.Test
 
             // Result 3 : Edit ProductGroup (ID 99) Must be return an error message
             Assert.IsFalse(result3.IsSuccess);
-            Assert.AreEqual(result3.Message, "No Product Group in this query");
+            Assert.AreEqual(result3.Message, "Product Group is not Exist");
 
             Assert.IsNull(dataProductGroup3);
             Assert.IsNull(chkProductGroup3);
@@ -697,7 +697,7 @@ namespace SmileShop.Test
 
             // Result 1 : No data in database must return an error message
             Assert.IsFalse(result1.IsSuccess);
-            Assert.AreEqual(result1.Message, "No Product Group in this query");
+            Assert.AreEqual(result1.Message, "Product Group is not Exist");
 
             // Result 2 : if ID (0) not grater than 0,  return an error message
             Assert.IsFalse(result2.IsSuccess);
@@ -786,12 +786,11 @@ namespace SmileShop.Test
             // Result 3 : ProductGroup (Id 99) is not in the database, return with Error Message
 
             Assert.IsFalse(result3.IsSuccess);
-            Assert.AreEqual(result3.Message, "No Product Group in this query");
+            Assert.AreEqual(result3.Message, "Product Group is not Exist");
 
             Assert.IsNull(dataProductGroup3);
             Assert.IsNull(chkProductGroup3);
         }
-
 
         public async Task<User> SetupUser(AppDBContext context, IMapper mapper, IHttpContextAccessor http, UserRegisterDto userdto)
         {

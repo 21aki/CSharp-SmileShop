@@ -17,6 +17,8 @@
     <Compile Remove="Migrations\20210211055539_inventory-add-usercreated.Designer.cs" />
     <Compile Remove="Migrations\20210211055806_inventory-add-usercreated.cs" />
     <Compile Remove="Migrations\20210211055806_inventory-add-usercreated.Designer.cs" />
+    <Compile Remove="Migrations\20210212031558_remodel-related-to-stock.cs" />
+    <Compile Remove="Migrations\20210212031558_remodel-related-to-stock.Designer.cs" />
   </ItemGroup>
 
   <!--<PropertyGroup>

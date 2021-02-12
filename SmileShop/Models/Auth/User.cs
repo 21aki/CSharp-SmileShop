@@ -34,7 +34,7 @@ namespace SmileShop.Models
         public virtual ICollection<Order> Orders { get; set; }
         public virtual ICollection<ProductGroup> ProductGroups { get; set; }
         public virtual ICollection<Product> Products { get; set; }
-        public virtual ICollection<Stock> Stock_ { get; set; }
+        public virtual ICollection<Stock> Stock { get; set; }
 
     }
 }

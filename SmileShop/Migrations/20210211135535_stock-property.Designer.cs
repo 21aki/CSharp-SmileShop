@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmileShop.Data;
 
 namespace SmileShop.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20210211135535_stock-property")]
+    partial class stockproperty
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -182,6 +184,9 @@ namespace SmileShop.Migrations
                     b.Property<string>("Remark")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("StockAfter")
+                        .HasColumnType("int");
+
                     b.Property<int>("StockBefore")
                         .HasColumnType("int");
 
@@ -245,14 +250,14 @@ namespace SmileShop.Migrations
 
             modelBuilder.Entity("SmileShop.Models.OrderDetail", b =>
                 {
-                    b.HasOne("SmileShop.Models.Order", "Order")
+                    b.HasOne("SmileShop.Models.Order", "Order_")
                         .WithMany("OrderDetails")
                         .HasForeignKey("OrderId")
                         .HasConstraintName("FK_OrderDetail_Order")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SmileShop.Models.Product", "Product")
+                    b.HasOne("SmileShop.Models.Product", "Product_")
                         .WithMany("OrderDetails")
                         .HasForeignKey("ProductId")
                         .HasConstraintName("FK_OrderDetail_Product")
@@ -269,7 +274,7 @@ namespace SmileShop.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SmileShop.Models.ProductGroup", "Group")
+                    b.HasOne("SmileShop.Models.ProductGroup", "Group_")
                         .WithMany("Products")
                         .HasForeignKey("GroupId")
                         .HasConstraintName("FK_Product_ProductGroup")
@@ -289,15 +294,15 @@ namespace SmileShop.Migrations
             modelBuilder.Entity("SmileShop.Models.Stock", b =>
                 {
                     b.HasOne("SmileShop.Models.User", "CreatedByUser")
-                        .WithMany("Stock")
+                        .WithMany("Stock_")
                         .HasForeignKey("CreatedByUserId")
-                        .HasConstraintName("FK_Stock_User")
+                        .HasConstraintName("FK_Inventory_User")
                         .IsRequired();
 
-                    b.HasOne("SmileShop.Models.Product", "Product")
-                        .WithMany("Stock")
+                    b.HasOne("SmileShop.Models.Product", "Product_")
+                        .WithMany("Stock_")
                         .HasForeignKey("ProductId")
-                        .HasConstraintName("FK_Stock_Product")
+                        .HasConstraintName("FK_Inventory_Product")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

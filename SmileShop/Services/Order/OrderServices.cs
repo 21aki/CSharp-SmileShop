@@ -17,12 +17,14 @@ namespace SmileShop.Services
         private readonly AppDBContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContext;
+        private readonly IStockServices _stockServices;
 
-        public OrderServices(AppDBContext dbContext, IMapper mapper, IHttpContextAccessor httpContext) : base(dbContext, mapper, httpContext)
+        public OrderServices(AppDBContext dbContext, IMapper mapper, IHttpContextAccessor httpContext, IStockServices stockServices) : base(dbContext, mapper, httpContext)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _httpContext = httpContext;
+            _stockServices = stockServices;
         }
 
         public async Task<ServiceResponseWithPagination<List<OrderOnlyDTO>>> GetAll(PaginationDto pagination = null, OrderFilterDTO OrderFilter = null, DataOrderDTO ordering = null)
@@ -38,7 +40,7 @@ namespace SmileShop.Services
             // Ordering
             if (!(ordering is null))
             {
-                var columns = new List<string> { "Id", "Date", "CreatedBy"};
+                var columns = new List<string> { "Id", "Date", "CreatedBy" };
 
                 if (columns.Exists(x => x == ordering.OrderBy))
                 {
@@ -69,7 +71,7 @@ namespace SmileShop.Services
 
             // Return error if count is 0
             if (result.Count == 0)
-                return ResponseResultWithPagination.Failure<List<OrderOnlyDTO>>("No Product in this query");
+                return ResponseResultWithPagination.Failure<List<OrderOnlyDTO>>("Order is not Exist");
 
             // Mapping
             var dto = _mapper.Map<List<OrderOnlyDTO>>(result);
@@ -77,7 +79,7 @@ namespace SmileShop.Services
             // Return Results
             return ResponseResultWithPagination.Success<List<OrderOnlyDTO>>(dto, paginationResult);
         }
-    
+
         public async Task<ServiceResponse<OrderDTO>> Get(int OrderId)
         {
 
@@ -90,7 +92,7 @@ namespace SmileShop.Services
 
             // Return error if count is 0
             if (result is null)
-                return ResponseResult.Failure<OrderDTO>("No Order in this query");
+                return ResponseResult.Failure<OrderDTO>("Order is not Exist");
 
             // Mapping
             var dto = _mapper.Map<OrderDTO>(result);
@@ -106,7 +108,7 @@ namespace SmileShop.Services
             if (String.IsNullOrEmpty(GetUserId()))
                 return ResponseResult.Failure<OrderDTO>("User must be presented to perform this method");
 
-            if(addOrder.Discount > 1 || addOrder.Discount < 0)
+            if (addOrder.Discount > 1 || addOrder.Discount < 0)
                 return ResponseResult.Failure<OrderDTO>("Discount must be percentage range of 0.00 to 1.00");
 
             var listOrderDetail = _mapper.Map<List<OrderDetail>>(addOrder.OrderDetails);
@@ -114,32 +116,34 @@ namespace SmileShop.Services
             decimal orderTotal = 0;
             decimal orderNet = 0;
 
-            //For each OrderDetail check if Product is sufficient for distract from stocks.
+            //For each OrderDetail check if Product is sufficient.
 
             for (int i = 0; i < listOrderDetail.Count; i++)
             {
-                bool result = false;
+                int balance;
                 decimal price = 0;
 
-                (result, price) = await ProductIsSufficient(listOrderDetail[i].ProductId, listOrderDetail[i].Quantity);
-                if (!result)
+                try
                 {
-                    //Return fail if Produis insufficient
-                    //EF will not savechange.
-                    return ResponseResult.Failure<OrderDTO>("Order has insufficient Items");
-                } 
-                else
-                {
-                    listOrderDetail[i].Price = price;
-                    listOrderDetail[i].DiscountPrice = price * addOrder.Discount;
-                    orderQuantity += listOrderDetail[i].Quantity;
-                    orderTotal += orderQuantity * price;
+                    (balance, price) = await _stockServices.ProductIsSufficient(listOrderDetail[i].ProductId, new ProductStockAddDTO { Debit = 0, Credit = listOrderDetail[i].Quantity });
                 }
+                catch (ArgumentNullException anEx)
+                {
+                    //Return fail if Product is insufficient
+                    //EF will not savechange.
+                    return ResponseResult.Failure<OrderDTO>(anEx.Message);
+                }
+
+                listOrderDetail[i].Price = price;
+                listOrderDetail[i].DiscountPrice = price * addOrder.Discount;
+                orderQuantity += listOrderDetail[i].Quantity;
+                orderTotal += orderQuantity * price;
+
             }
 
             orderNet = orderTotal - listOrderDetail.Sum(_ => _.DiscountPrice);
 
-            // Create & set data
+            // Create New Order 
             Order newOrder = _mapper.Map<Order>(addOrder);
 
             newOrder.OrderDetails = listOrderDetail;
@@ -150,6 +154,14 @@ namespace SmileShop.Services
             newOrder.Net = orderNet;
 
             await _dbContext.Order.AddAsync(newOrder);
+
+            // Record a stock
+            for (int i = 0; i < listOrderDetail.Count; i++)
+            {
+                await _stockServices.Set(listOrderDetail[i].ProductId, new ProductStockAddDTO { Debit = 0, Credit = listOrderDetail[i].Quantity, Remark = $"Deduct from Order ({newOrder.Id})" });
+            }
+
+            // Save changes
             await _dbContext.SaveChangesAsync();
 
             // Mapping
@@ -170,7 +182,7 @@ namespace SmileShop.Services
 
             // Return error if count is 0
             if (result is null)
-                return ResponseResult.Failure<OrderDTO>("No Order in this query");
+                return ResponseResult.Failure<OrderDTO>("Order is not Exist");
 
             var orderDetails = await _dbContext.OrderDetail
                                                .Where(od => od.OrderId == OrderId)
@@ -198,29 +210,6 @@ namespace SmileShop.Services
             return query;
         }
 
-        public async Task<(bool, decimal)> ProductIsSufficient(int productId, int amount)
-        {
-
-            if (productId <= 0)
-                return (false, 0);
-
-            if (amount <= 0)
-                return (false, 0);
-
-            var product = await _dbContext.Product.FindAsync(productId);
-
-            if (product is null)
-                return (false, 0);
-
-            if (product.StockCount < amount)
-                return (false, 0);
-
-            // If Sufficient then decread number from stock and update
-            product.StockCount = product.StockCount - amount;
-            _dbContext.Product.Update(product);
-
-            return (true, product.Price);
-        }
 
     }
 }

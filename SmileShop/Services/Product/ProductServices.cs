@@ -139,6 +139,11 @@ namespace SmileShop.Services
                                        .Where(x => x.Id == productId)
                                        .FirstOrDefaultAsync();
 
+            var productGroup = await _dbContext.ProductGroup.FindAsync(editProduct.GroupId);
+
+            if (productGroup is null)
+                throw new InvalidOperationException("Product Group is not Exist");
+
             // If no data return error
             if (data is null)
                 throw new InvalidOperationException("Product is not Exist");

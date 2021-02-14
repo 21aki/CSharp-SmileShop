@@ -1,20 +1,17 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.EntityFrameworkCore.InMemory;
-using Microsoft.EntityFrameworkCore;
-using SmileShop.Data;
-using System;
 using AutoMapper;
-using SmileShop.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using SmileShop.Services;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+using SmileShop.Data;
 using SmileShop.DTOs;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Security.Claims;
+using SmileShop.Models;
+using SmileShop.Services;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SmileShop.Test
 {
@@ -73,7 +70,7 @@ namespace SmileShop.Test
             httpContext.Setup(_ => _.HttpContext).Returns(http);
 
             // Add Mockup data
-            await ProductGroupData(context, mapper, httpContext.Object);
+            await Generate_ProductGroup_Data(context, mapper, httpContext.Object);
 
             // Prepare instance for testing
             var actContext = BuildContext(dbName);
@@ -117,7 +114,7 @@ namespace SmileShop.Test
             httpContext.Setup(_ => _.HttpContext).Returns(http);
 
             // Add Mockup data
-            await ProductGroupData(context, mapper, httpContext.Object);
+            await Generate_ProductGroup_Data(context, mapper, httpContext.Object);
 
             // Prepare instance for testing
             var actContext = BuildContext(dbName);
@@ -151,7 +148,7 @@ namespace SmileShop.Test
             httpContext.Setup(_ => _.HttpContext).Returns(http);
 
             // Add Mockup data
-            await ProductGroupData(context, mapper, httpContext.Object);
+            await Generate_ProductGroup_Data(context, mapper, httpContext.Object);
 
             // Prepare Query
             var pagination = new PaginationDto();
@@ -201,7 +198,7 @@ namespace SmileShop.Test
             httpContext.Setup(_ => _.HttpContext).Returns(http);
 
             // Add Mockup data
-            await ProductGroupData(context, mapper, httpContext.Object);
+            await Generate_ProductGroup_Data(context, mapper, httpContext.Object);
 
             // Prepare Query
             var pagination = new PaginationDto();
@@ -297,7 +294,7 @@ namespace SmileShop.Test
             var http = new DefaultHttpContext();
             httpContext.Setup(_ => _.HttpContext).Returns(http);
 
-            await ProductGroupData(context, mapper, httpContext.Object);
+            await Generate_ProductGroup_Data(context, mapper, httpContext.Object);
 
             var actContext = BuildContext(dbName);
 
@@ -384,7 +381,7 @@ namespace SmileShop.Test
             var http = new DefaultHttpContext();
             httpContext.Setup(_ => _.HttpContext).Returns(http);
 
-            await ProductGroupData(context, mapper, httpContext.Object);
+            await Generate_ProductGroup_Data(context, mapper, httpContext.Object);
 
             var actContext = BuildContext(dbName);
 
@@ -480,7 +477,7 @@ namespace SmileShop.Test
             var http = new DefaultHttpContext();
             httpContext.Setup(_ => _.HttpContext).Returns(http);
 
-            await ProductGroupData(context, mapper, httpContext.Object);
+            await Generate_ProductGroup_Data(context, mapper, httpContext.Object);
 
             var productGroupId1 = -5;
             var productGroupId2 = 1;
@@ -815,7 +812,7 @@ namespace SmileShop.Test
             var http = new DefaultHttpContext();
             httpContext.Setup(_ => _.HttpContext).Returns(http);
 
-            await ProductGroupData(context, mapper, httpContext.Object);
+            await Generate_ProductGroup_Data(context, mapper, httpContext.Object);
 
             var productGroupId1 = 1;
             var productGroupId2 = 3;
@@ -1023,7 +1020,7 @@ namespace SmileShop.Test
             var http = new DefaultHttpContext();
             httpContext.Setup(_ => _.HttpContext).Returns(http);
 
-            await ProductGroupData(context, mapper, httpContext.Object);
+            await Generate_ProductGroup_Data(context, mapper, httpContext.Object);
 
             int productGroupId1 = 1;
             int productGroupId2 = 4;
@@ -1125,32 +1122,6 @@ namespace SmileShop.Test
             Assert.IsNull(chkProductGroup3);
         }
 
-        public async Task<User> SetupUser(AppDBContext context, IMapper mapper, IHttpContextAccessor http, UserRegisterDto userdto)
-        {
-            // Stand in User
-            var auth = new AuthService(http, context, mapper, SmileShop.Program.Configuration);
-            await auth.Register(userdto);
-            User user = await context.Users.SingleOrDefaultAsync(x => x.Username.ToLower().Equals(userdto.Username.ToLower()));
-
-            return user;
-        }
-        public async Task ProductGroupData(AppDBContext context, IMapper mapper, IHttpContextAccessor http)
-        {
-            var user = await SetupUser(context, mapper, http, new UserRegisterDto { Username = "Test", Password = "Test" });
-
-            // Stand in Product Group
-            List<ProductGroup> productGroups = new List<ProductGroup> {
-                new ProductGroup { Name = "Test Product Group 1", CreatedByUserId = user.Id, CreatedDate = DateTime.Now },
-                new ProductGroup { Name = "Test Product Group 2", CreatedByUserId = user.Id, CreatedDate = DateTime.Now },
-                new ProductGroup { Name = "Test Product Group 3", CreatedByUserId = user.Id, CreatedDate = DateTime.Now },
-                new ProductGroup { Name = "Test Product Group 4", CreatedByUserId = user.Id, CreatedDate = DateTime.Now },
-                new ProductGroup { Name = "Test Product Group 5", CreatedByUserId = user.Id, CreatedDate = DateTime.Now },
-            };
-
-            // Add Product Group
-            context.ProductGroup.AddRange(productGroups);
-            await context.SaveChangesAsync();
-        }
 
     }
 }

@@ -18,9 +18,17 @@ namespace SmileShop.Models
 
         [Required]
         public DateTime CreatedDate { get; set; }
+
+        [Required]
         public int ItemCount { get; set; }
+
+        [Required]
         public decimal Total { get; set; }
+
+        [Required]
         public decimal Discount { get; set; }
+
+        [Required]
         public decimal Net { get; set; }
         public Guid CreatedByUserId { get; set; }
 

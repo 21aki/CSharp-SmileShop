@@ -19,6 +19,8 @@
     <Compile Remove="Migrations\20210211055806_inventory-add-usercreated.Designer.cs" />
     <Compile Remove="Migrations\20210212031558_remodel-related-to-stock.cs" />
     <Compile Remove="Migrations\20210212031558_remodel-related-to-stock.Designer.cs" />
+    <Compile Remove="Migrations\20210214035547_Data-Annotation.cs" />
+    <Compile Remove="Migrations\20210214035547_Data-Annotation.Designer.cs" />
   </ItemGroup>
 
   <!--<PropertyGroup>

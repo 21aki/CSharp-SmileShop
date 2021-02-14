@@ -14,12 +14,19 @@ namespace SmileShop.Models
             Stock = new HashSet<Stock>();
         }
 
+        [Key]
+        [Range(1,999999)]
         public int Id { get; set; }
+
+        [Reqired]
+        [Range(1, 999999)]
         public int GroupId { get; set; }
 
         [Reqired]
+        [MinLength(5)]
         [MaxLength(50)]
         public string Name { get; set; }
+        
         public decimal Price { get; set; }
         public int StockCount { get; set; }
         public Guid CreatedByUserId { get; set; }

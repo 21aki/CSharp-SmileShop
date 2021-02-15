@@ -14,7 +14,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace SmileShop.Test
+namespace SmileShop.Test.UnitTest
 {
     /**
      * Test Name : ProductServiceTest

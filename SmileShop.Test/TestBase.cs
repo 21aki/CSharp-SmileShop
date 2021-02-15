@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using SmileShop.Data;
 using SmileShop.DTOs;
@@ -8,6 +11,7 @@ using SmileShop.Models;
 using SmileShop.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -153,6 +157,34 @@ namespace SmileShop.Test
             await context.SaveChangesAsync();
 
             return user;
+        }
+
+
+        protected WebApplicationFactory<Startup> BuildWebApplicationFactory(string databaseName)
+        {
+            var factory = new WebApplicationFactory<Startup>();
+
+            factory = factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureTestServices(services =>
+                {
+                    var descriptorDbContext = services.SingleOrDefault(d =>
+                    d.ServiceType == typeof(DbContextOptions<AppDBContext>));
+
+
+                    if (descriptorDbContext != null)
+                    {
+                        services.Remove(descriptorDbContext);
+                    }
+
+                    services.AddDbContext<AppDBContext>(options =>
+                    {
+                        options.UseInMemoryDatabase(databaseName);
+                    });
+                });
+            });
+
+            return factory;
         }
     }
 }

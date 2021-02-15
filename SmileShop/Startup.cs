@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Reflection;
 
 namespace SmileShop
 {
@@ -42,8 +43,9 @@ namespace SmileShop
             services.AddControllers(options =>
             {
                 options.RespectBrowserAcceptHeader = true;
-            }).AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
-            //services.AddControllers().AddXmlSerializerFormatters();
+            })
+            .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore)
+            .AddXmlSerializerFormatters();
 
 
             services.AddHttpContextAccessor();
@@ -100,6 +102,7 @@ namespace SmileShop
             services.AddScoped<IOrderServices, OrderServices>();
             services.AddScoped<IStockServices, StockServices>();
             //------End: Service------
+
 
             AddFormatters(services);
         }
@@ -245,7 +248,7 @@ namespace SmileShop
                     inputFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/prs.odatatestxx-odata"));
                 }
             }
-            );
+            ); //.AddApplicationPart(Assembly.Load(new AssemblyName("SmileShop"))); ;
         }
 
         #endregion Method

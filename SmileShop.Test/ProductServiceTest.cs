@@ -25,7 +25,7 @@ namespace SmileShop.Test
      */
 
     [TestClass]
-    public class ProductTest : TestBase
+    public class ProductServiceTest : TestBase
     {
         // GetAll_NoData_ReturnError // InvalidOperationException
         [TestMethod]
@@ -46,7 +46,7 @@ namespace SmileShop.Test
             await service.GetAll(new PaginationDto(), new ProductFilterDTO(), new DataOrderDTO());
 
             // ===== Assert ======
-            // Expect Exception
+            // Expected Exception
         }
 
         // GetAll_HaveData_ReturnData
@@ -175,7 +175,7 @@ namespace SmileShop.Test
             var result = await service.Get(id);
 
             // ===== Assert =====
-            // Expect Exception
+            // Expected Exception
 
         }
 
@@ -202,7 +202,7 @@ namespace SmileShop.Test
             var result = await service.Get(id);
 
             // ===== Assert =====
-            // Expect Exception
+            // Expected Exception
         }
 
         // Get_ValidProduct_ReturnDataWithSameID
@@ -278,7 +278,7 @@ namespace SmileShop.Test
             }
 
             // ===== Assert =====
-            // Expect Exception
+            // Expected Exception
 
             var assContext = BuildContext(dbName);
 
@@ -338,7 +338,7 @@ namespace SmileShop.Test
             }
 
             // ===== Assert =====
-            // Expect Exception
+            // Expected Exception
 
             var assContext = BuildContext(dbName);
 
@@ -423,7 +423,7 @@ namespace SmileShop.Test
             var result = await service.Edit(id, new ProductAddDTO { GroupId = groupID, Name = editName, Price = editPriceD });
 
             // ===== Assert =====
-            // Expect Exception
+            // Expected Exception
 
         }
 
@@ -471,7 +471,7 @@ namespace SmileShop.Test
             }
 
             // ===== Assert =====
-            // Expect Exception
+            // Expected Exception
             var assContext = BuildContext(dbName);
 
             Assert.IsTrue(exException);
@@ -520,7 +520,7 @@ namespace SmileShop.Test
             result = await service.Edit(id, new ProductAddDTO { GroupId = groupID, Name = editName, Price = editPriceD });
 
             // ===== Assert =====
-            // Expect Exception
+            // Expected Exception
             var assContext = BuildContext(dbName);
 
             Assert.IsNotNull(data);
@@ -561,7 +561,7 @@ namespace SmileShop.Test
             var result = await service.Delete(id);
 
             // ===== Assert =====
-            // Expect Exception
+            // Expected Exception
 
         }
 
@@ -593,7 +593,7 @@ namespace SmileShop.Test
             var result = await service.Delete(id);
 
             // ===== Assert =====
-            // Expect Exception
+            // Expected Exception
         }
 
 
@@ -627,7 +627,7 @@ namespace SmileShop.Test
             result = await service.Delete(id);
 
             // ===== Assert =====
-            // Expect Exception
+            // Expected Exception
             var assContext = BuildContext(dbName);
             Assert.IsNotNull(result.Data);
             Assert.IsTrue(result.IsSuccess);

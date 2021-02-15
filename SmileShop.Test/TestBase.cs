@@ -95,25 +95,61 @@ namespace SmileShop.Test
 
             // Stand in Product
             var product = new List<Product> {
-                new Product {Id = 1, GroupId = 1, Name = "Test Product 1 Group A", Price = 10, StockCount = 0, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
-                new Product {Id = 2, GroupId = 1, Name = "Test Product 2 Group A", Price = 20, StockCount = 0, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
-                new Product {Id = 3, GroupId = 1, Name = "Test Product 3 Group A", Price = 30, StockCount = 0, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
-                new Product {Id = 4, GroupId = 2, Name = "Test Product 1 Group B", Price = 20, StockCount = 0, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
-                new Product {Id = 5, GroupId = 2, Name = "Test Product 2 Group B", Price = 30, StockCount = 0, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
-                new Product {Id = 6, GroupId = 2, Name = "Test Product 3 Group B", Price = 40, StockCount = 0, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
-                new Product {Id = 7, GroupId = 3, Name = "Test Product 1 Group C", Price = 30, StockCount = 0, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
-                new Product {Id = 8, GroupId = 3, Name = "Test Product 2 Group C", Price = 40, StockCount = 0, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
-                new Product {Id = 9, GroupId = 3, Name = "Test Product 3 Group C", Price = 50, StockCount = 0, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
+                new Product {Id = 1, GroupId = 1, Name = "Test Product 1 Group A", Price = 10, StockCount = 40, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
+                new Product {Id = 2, GroupId = 1, Name = "Test Product 2 Group A", Price = 20, StockCount = 20, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
+                new Product {Id = 3, GroupId = 1, Name = "Test Product 3 Group A", Price = 30, StockCount = 10, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
+                new Product {Id = 4, GroupId = 2, Name = "Test Product 1 Group B", Price = 20, StockCount = 20, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
+                new Product {Id = 5, GroupId = 2, Name = "Test Product 2 Group B", Price = 30, StockCount = 25, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
+                new Product {Id = 6, GroupId = 2, Name = "Test Product 3 Group B", Price = 40, StockCount = 40, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
+                new Product {Id = 7, GroupId = 3, Name = "Test Product 1 Group C", Price = 30, StockCount = 20, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
+                new Product {Id = 8, GroupId = 3, Name = "Test Product 2 Group C", Price = 40, StockCount = 20, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
+                new Product {Id = 9, GroupId = 3, Name = "Test Product 3 Group C", Price = 50, StockCount = 20, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
                 new Product {Id = 10, GroupId = 4, Name = "Test Product 1 Group D", Price = 40, StockCount = 0, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
-                new Product {Id = 11, GroupId = 4, Name = "Test Product 2 Group D", Price = 50, StockCount = 0, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
-                new Product {Id = 12, GroupId = 4, Name = "Test Product 3 Group D", Price = 60, StockCount = 0, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
-                new Product {Id = 13, GroupId = 5, Name = "Test Product 1 Group E", Price = 50, StockCount = 0, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
-                new Product {Id = 14, GroupId = 5, Name = "Test Product 2 Group E", Price = 60, StockCount = 0, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
-                new Product {Id = 15, GroupId = 5, Name = "Test Product 3 Group E", Price = 70, StockCount = 0, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
+                new Product {Id = 11, GroupId = 4, Name = "Test Product 2 Group D", Price = 50, StockCount = 20, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
+                new Product {Id = 12, GroupId = 4, Name = "Test Product 3 Group D", Price = 60, StockCount = 20, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
+                new Product {Id = 13, GroupId = 5, Name = "Test Product 1 Group E", Price = 50, StockCount = 20, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
+                new Product {Id = 14, GroupId = 5, Name = "Test Product 2 Group E", Price = 60, StockCount = 20, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
+                new Product {Id = 15, GroupId = 5, Name = "Test Product 3 Group E", Price = 70, StockCount = 30, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
             };
 
             // Add Product Group
             await context.Product.AddRangeAsync(product);
+            await context.SaveChangesAsync();
+
+            return user;
+        }
+        public async Task<User> Generate_Stock_Data(AppDBContext context, IMapper mapper, IHttpContextAccessor http)
+        {
+            var user = await Generate_Product_Data(context, mapper, http);
+
+            // Stand in Stock
+            var stock = new List<Stock>
+            {
+                new Stock {Id = 1,ProductId = 1, Debit = 20, Credit = 0, StockBefore = 0, Remark = "Inititial Stock", CreatedByUserId = user.Id, CreatedDate = DateTime.Now},
+                new Stock {Id = 2,ProductId = 2, Debit = 20, Credit = 0, StockBefore = 0, Remark = "Inititial Stock", CreatedByUserId = user.Id, CreatedDate = DateTime.Now},
+                new Stock {Id = 3,ProductId = 3, Debit = 20, Credit = 0, StockBefore = 0, Remark = "Inititial Stock", CreatedByUserId = user.Id, CreatedDate = DateTime.Now},
+                new Stock {Id = 4,ProductId = 4, Debit = 20, Credit = 0, StockBefore = 0, Remark = "Inititial Stock", CreatedByUserId = user.Id, CreatedDate = DateTime.Now},
+                new Stock {Id = 5,ProductId = 5, Debit = 20, Credit = 0, StockBefore = 0, Remark = "Inititial Stock", CreatedByUserId = user.Id, CreatedDate = DateTime.Now},
+                new Stock {Id = 6,ProductId = 6, Debit = 20, Credit = 0, StockBefore = 0, Remark = "Inititial Stock", CreatedByUserId = user.Id, CreatedDate = DateTime.Now},
+                new Stock {Id = 7,ProductId = 6, Debit = 20, Credit = 0, StockBefore = 20, Remark = "Stock Set", CreatedByUserId = user.Id, CreatedDate = DateTime.Now},
+                new Stock {Id = 8,ProductId = 8, Debit = 20, Credit = 0, StockBefore = 0, Remark = "Inititial Stock", CreatedByUserId = user.Id, CreatedDate = DateTime.Now},
+                new Stock {Id = 9,ProductId = 9, Debit = 20, Credit = 0, StockBefore = 0, Remark = "Inititial Stock", CreatedByUserId = user.Id, CreatedDate = DateTime.Now},
+                new Stock {Id = 10,ProductId = 10, Debit = 20, Credit = 0, StockBefore = 0, Remark = "Inititial Stock", CreatedByUserId = user.Id, CreatedDate = DateTime.Now},
+                new Stock {Id = 11,ProductId = 11, Debit = 20, Credit = 0, StockBefore = 0, Remark = "Inititial Stock", CreatedByUserId = user.Id, CreatedDate = DateTime.Now},
+                new Stock {Id = 12,ProductId = 12, Debit = 20, Credit = 0, StockBefore = 0, Remark = "Inititial Stock", CreatedByUserId = user.Id, CreatedDate = DateTime.Now},
+                new Stock {Id = 13,ProductId = 13, Debit = 20, Credit = 0, StockBefore = 0, Remark = "Inititial Stock", CreatedByUserId = user.Id, CreatedDate = DateTime.Now},
+                new Stock {Id = 14,ProductId = 14, Debit = 20, Credit = 0, StockBefore = 0, Remark = "Inititial Stock", CreatedByUserId = user.Id, CreatedDate = DateTime.Now},
+                new Stock {Id = 15,ProductId = 15, Debit = 20, Credit = 0, StockBefore = 0, Remark = "Inititial Stock", CreatedByUserId = user.Id, CreatedDate = DateTime.Now},
+                new Stock {Id = 16,ProductId = 1, Debit = 20, Credit = 0, StockBefore = 20, Remark = "Stock Set", CreatedByUserId = user.Id, CreatedDate = DateTime.Now},
+                new Stock {Id = 17,ProductId = 3, Debit = 0, Credit = 10, StockBefore = 20, Remark = "Stock Set", CreatedByUserId = user.Id, CreatedDate = DateTime.Now},
+                new Stock {Id = 18,ProductId = 5, Debit = 5, Credit = 0, StockBefore = 20, Remark = "Stock Set", CreatedByUserId = user.Id, CreatedDate = DateTime.Now},
+                new Stock {Id = 19,ProductId = 10, Debit = 0, Credit = 20, StockBefore = 20, Remark = "Stock Set", CreatedByUserId = user.Id, CreatedDate = DateTime.Now},
+                new Stock {Id = 20,ProductId = 15, Debit = 10, Credit = 0, StockBefore = 20, Remark = "Stock Set", CreatedByUserId = user.Id, CreatedDate = DateTime.Now},
+                
+            };
+
+            // Add Product Group
+            await context.Stock.AddRangeAsync(stock);
             await context.SaveChangesAsync();
 
             return user;

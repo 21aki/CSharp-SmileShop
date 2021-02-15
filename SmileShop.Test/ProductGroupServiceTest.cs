@@ -54,7 +54,7 @@ namespace SmileShop.Test
             var result = await service.GetAll(pagination, filter, order);
 
             /// ==== Assert =====
-            /// Expect Exception
+            /// Expected Exception
         }
 
         // GetAll_HaveData_ReturnResultWithPagination
@@ -131,7 +131,7 @@ namespace SmileShop.Test
 
             /// ===== Assert =====
             // Result : Check on Page Doesn't exist
-            // Expect Exception
+            // Expected Exception
         }
 
         // GetAll_CanFilterByName_ReturnFilteredListOfProductGroup
@@ -220,7 +220,7 @@ namespace SmileShop.Test
 
 
             // Result : Filter that not contain in Data
-            // Expect Exception
+            // Expected Exception
         }
 
         // GetList_NoData_ReturnErrorMessage
@@ -249,7 +249,7 @@ namespace SmileShop.Test
             // Assert
 
             // Filter is presented, but there is not have data.
-            // Expect Exception
+            // Expected Exception
         }
 
         // GetList_HaveNoFilter_ReturnError
@@ -276,7 +276,7 @@ namespace SmileShop.Test
             // Assert
 
             // Filter is presented, but there is not have data.
-            // Expect Exception
+            // Expected Exception
         }
 
         // GetList_HaveDataAndFilter_ReturnFilteredListOfProductGroup <- (Merge) GetList_NoFilter_ReturnErrorMessage
@@ -392,7 +392,7 @@ namespace SmileShop.Test
 
             /// ===== Assert =====
             // Result : Used filter that not contain in database
-            // Expect Exception
+            // Expected Exception
 
         }
 
@@ -793,7 +793,7 @@ namespace SmileShop.Test
             /// ===== Assert =====
 
             // No data in database must return an error message
-            // Expect Exception
+            // Expected Exception
         }
 
         // Edit_WithData_ReturnEditedResult

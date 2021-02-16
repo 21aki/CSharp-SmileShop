@@ -7,3 +7,4 @@
 2021-02-16 09:19:32.970 +07:00 [WRN] No type was specified for the decimal column 'Price' on entity type 'Product'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values using 'HasColumnType()'.
 2021-02-16 09:28:42.730 +07:00 [INF] Starting web host
 2021-02-16 10:00:35.481 +07:00 [INF] Starting web host
+2021-02-16 10:42:39.366 +07:00 [INF] Starting web host

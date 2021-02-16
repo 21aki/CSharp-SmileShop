@@ -28,7 +28,7 @@ namespace SmileShop.Test.IntegratedTest
     [TestClass]
     public class ProductGroupTest : TestBase
     {
-
+        #region GetAll
         [TestMethod]
         [TestCategory("GetAll")]
         public async Task GetAll_EmptyList()
@@ -159,6 +159,9 @@ namespace SmileShop.Test.IntegratedTest
             Assert.AreEqual(1, productGroup.Data[4].Id);
         }
 
+        #endregion
+
+        #region Get
         [DataTestMethod]
         [TestCategory("Get")]
         [DataRow(-5)]
@@ -246,7 +249,9 @@ namespace SmileShop.Test.IntegratedTest
             Assert.AreEqual(data.Id, productGroup.Data.Id);
             Assert.AreEqual(data.Name, productGroup.Data.Name);
         }
+        #endregion
 
+        #region Add
         [TestMethod]
         [TestCategory("Add")]
         public async Task Add_NoLoginUser_ReturnErrorMessage()
@@ -379,6 +384,9 @@ namespace SmileShop.Test.IntegratedTest
             Assert.AreEqual(newProductGroup.Name, productGroup.Data.Name);
         }
 
+        #endregion
+
+        #region Edit
         [TestMethod]
         [TestCategory("Edit")]
         public async Task Edit_SentBlankProductGroupName_ReturnErrorMessage()
@@ -542,7 +550,9 @@ namespace SmileShop.Test.IntegratedTest
 
             Assert.AreEqual(1, count);
         }
+        #endregion
 
+        #region Delete
         [TestMethod]
         [TestCategory("Delete")]
         [DataRow(4)]
@@ -633,5 +643,7 @@ namespace SmileShop.Test.IntegratedTest
 
             Assert.AreEqual(dataCount - 1, count);
         }
+
+        #endregion
     }
 }

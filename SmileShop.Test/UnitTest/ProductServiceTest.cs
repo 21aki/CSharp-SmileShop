@@ -292,7 +292,7 @@ namespace SmileShop.Test.UnitTest
 
             Assert.IsTrue(exException);
 
-            var count = assContext.Product.Count();
+            var count = await assContext.Product.CountAsync();
             Assert.AreEqual(0, count);
 
         }
@@ -533,7 +533,6 @@ namespace SmileShop.Test.UnitTest
             result = await service.Edit(id, new ProductAddDTO { GroupId = groupID, Name = editName, Price = editPriceD });
 
             // ===== Assert =====
-            // Expected Exception
             var assContext = BuildContext(dbName);
 
             Assert.IsNotNull(data);
@@ -643,7 +642,7 @@ namespace SmileShop.Test.UnitTest
             result = await service.Delete(id);
 
             // ===== Assert =====
-            // Expected Exception
+
             var assContext = BuildContext(dbName);
             Assert.IsNotNull(result.Data);
             Assert.IsTrue(result.IsSuccess);

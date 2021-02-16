@@ -23,7 +23,7 @@ namespace SmileShop.Test.UnitTest
         public async Task Get_InvalidProductID_ReturnError(int id)
         {
 
-            // ===== Arrage =====
+            // ===== Arrange =====
 
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);

@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
+using Newtonsoft.Json;
 using SmileShop.Data;
 using SmileShop.DTOs;
 using SmileShop.Models;
@@ -13,8 +12,8 @@ using SmileShop.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SmileShop.Test
@@ -53,12 +52,7 @@ namespace SmileShop.Test
         protected string ClassToJsonString(object obj)
         {
 
-            var options = new JsonSerializerOptions()
-            {
-                WriteIndented = true
-            };
-
-            var jsonString = JsonSerializer.Serialize(obj, options);
+            var jsonString = JsonConvert.SerializeObject(obj, Formatting.Indented);
 
             return jsonString;
         }
@@ -186,6 +180,26 @@ namespace SmileShop.Test
             });
 
             return factory;
+        }
+
+        protected async Task<string> SimulateLogin(HttpClient client)
+        {
+
+            var loginUrl = "/api/Auth/login";
+
+            var loginUser = new UserLoginDto { Username = "Test", Password = "Test" };
+            var loginPayload = await Task.Run(() => JsonConvert.SerializeObject(loginUser));
+            var loginContent = new StringContent(loginPayload, Encoding.UTF8, "application/json");
+            var loginResponse = await client.PostAsync(loginUrl, loginContent);
+            var baerer = JsonConvert.DeserializeObject<ServiceResponse<string>>(await loginResponse.Content.ReadAsStringAsync());
+
+            return baerer.Data;
+        }
+
+        protected async Task<HttpContent> ObjectToJsonContent(object obj)
+        {
+            var stringPayload = await Task.Run(() => JsonConvert.SerializeObject(obj));
+            return new StringContent(stringPayload, Encoding.UTF8, "application/json");
         }
     }
 }

@@ -29,10 +29,11 @@ namespace SmileShop.Test.UnitTest
     {
         // GetAll_NoData_ReturnError // InvalidOperationException
         [TestMethod]
+        [TestCategory("GetAll")]
         [ExpectedException(typeof(InvalidOperationException))]
         public async Task GetAll_NoData_ReturnError()
         {
-            // ===== Arrage =====
+            // ===== Arrange =====
 
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
@@ -51,12 +52,13 @@ namespace SmileShop.Test.UnitTest
 
         // GetAll_HaveData_ReturnData
         [DataTestMethod]
+        [TestCategory("GetAll")]
         [DataRow(1)]
         [DataRow(2)]
         public async Task GetAll_HaveData_ReturnData(int page)
         {
 
-            // ===== Arrage =====
+            // ===== Arrange =====
 
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
@@ -85,12 +87,13 @@ namespace SmileShop.Test.UnitTest
 
         // GetAll_WithFilter_ReturnFilterData
         [DataTestMethod]
+        [TestCategory("GetAll")]
         [DataRow("A")]
         [DataRow("2")]
         public async Task GetAll_WithFilter_ReturnFilterData(string filter)
         {
 
-            // ===== Arrage =====
+            // ===== Arrange =====
 
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
@@ -126,9 +129,10 @@ namespace SmileShop.Test.UnitTest
 
         // GetAll_WithOrder_ReturnOrderedData
         [TestMethod]
+        [TestCategory("GetAll")]
         public async Task GetAll_WithOrder_ReturnOrderedData()
         {
-            // ===== Arrage =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -154,13 +158,14 @@ namespace SmileShop.Test.UnitTest
 
         // Get_IdIsInvalid_RetureError // ArgumentOutOfRangeException
         [DataTestMethod]
+        [TestCategory("Get")]
         [DataRow(-20)]
         [DataRow(-1)]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public async Task Get_IdIsInvalid_RetureError(int id)
         {
 
-            // ===== Arrage =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -181,13 +186,14 @@ namespace SmileShop.Test.UnitTest
 
         // Get_InvalidProduct_ReturnError // InvalidOperationException
         [DataTestMethod]
+        [TestCategory("Get")]
         [DataRow(60)]
         [DataRow(50)]
         [ExpectedException(typeof(InvalidOperationException))]
         public async Task Get_InvalidProduct_ReturnError(int id)
         {
 
-            // ===== Arrage =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -207,12 +213,13 @@ namespace SmileShop.Test.UnitTest
 
         // Get_ValidProduct_ReturnDataWithSameID
         [DataTestMethod]
+        [TestCategory("Get")]
         [DataRow(10)]
         [DataRow(15)]
         public async Task Get_ValidProduct_ReturnDataWithSameID(int id)
         {
 
-            // ===== Arrage =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -245,12 +252,13 @@ namespace SmileShop.Test.UnitTest
 
         // Add_NoUser_ReturnError // UnauthorizedAccessException
         [DataTestMethod]
+        [TestCategory("Add")]
         [DataRow(1, "New Product", "20")]
         [DataRow(2, "New Product", "20")]
         public async Task Add_NoUser_ReturnError(int gid, string n, string pf)
         {
 
-            // ===== Arrage =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -291,12 +299,13 @@ namespace SmileShop.Test.UnitTest
 
         // Add_InvalidProductGroup_ReturnError // InvalidOperationException
         [DataTestMethod]
+        [TestCategory("Add")]
         [DataRow(-5, "New Product", "20")]
         [DataRow(25, "New Product", "20")]
         public async Task Add_InvalidProductGroup_ReturnError(int gid, string n, string pf)
         {
 
-            // ===== Arrage =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -350,12 +359,13 @@ namespace SmileShop.Test.UnitTest
 
         // Add_ValidProduct_ReturnData
         [DataTestMethod]
+        [TestCategory("Add")]
         [DataRow(1, "New Product 1 GROUP A", "50")]
         [DataRow(3, "New Product 2 GROUP C", "20")]
         public async Task Add_ValidProduct_ReturnData(int gid, string n, string pf)
         {
 
-            // ===== Arrage =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -399,13 +409,14 @@ namespace SmileShop.Test.UnitTest
 
         // Edit_IdIsInvalid_ReturnError // ArgumentOutOfRangeException
         [DataTestMethod]
+        [TestCategory("Edit")]
         [DataRow(0, 1, "Edit Product 1 GROUP Z", "20.00")]
         [DataRow(-15, 1, "Edit Product 1 GROUP Z", "20.00")]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public async Task Edit_IdIsInvalid_ReturnError(int id, int groupID, string editName, string editPrice)
         {
 
-            // ===== Arrage =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -429,6 +440,7 @@ namespace SmileShop.Test.UnitTest
 
         // Edit_InvalidProduct_ReturnError //InvalidOperationException
         [DataTestMethod]
+        [TestCategory("Edit")]
         [DataRow(1, -1, "Edit Product 1 GROUP Z", "20.00")]
         [DataRow(2, 99, "Edit Product 1 GROUP Z", "20.00")]
         [DataRow(18, 1, "Edit Product 1 GROUP Z", "20.00")]
@@ -436,7 +448,7 @@ namespace SmileShop.Test.UnitTest
         public async Task Edit_InvalidProduct_ReturnError(int id, int groupID, string editName, string editPrice)
         {
 
-            // ===== Arrage =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -488,6 +500,7 @@ namespace SmileShop.Test.UnitTest
 
         // Edit_ValidProduct_ReturnDataWithSaveChanged
         [DataTestMethod]
+        [TestCategory("Edit")]
         [DataRow(1, 1, "Edit Product 1 GROUP A", "10.00")]
         [DataRow(4, 2, "Edit Product 2 GROUP B", "20.00")]
         [DataRow(10, 3, "Edit Product 3 GROUP C", "30.00")]
@@ -495,7 +508,7 @@ namespace SmileShop.Test.UnitTest
         public async Task Edit_ValidProduct_ReturnDataWithSaveChanged(int id, int groupID, string editName, string editPrice)
         {
 
-            // ===== Arrage =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -539,13 +552,14 @@ namespace SmileShop.Test.UnitTest
 
         // Delete_IdIsInvalid_ReturnError // ArgumentOutOfRangeException
         [DataTestMethod]
+        [TestCategory("Delete")]
         [DataRow(0)]
         [DataRow(-25)]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public async Task Delete_IdIsInvalid_ReturnError(int id)
         {
 
-            // ===== Arrage =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -567,13 +581,14 @@ namespace SmileShop.Test.UnitTest
 
         // Delete_InvalidProduct_ReturnError //InvalidOperationException
         [DataTestMethod]
+        [TestCategory("Delete")]
         [DataRow(18)]
         [DataRow(200)]
         [ExpectedException(typeof(InvalidOperationException))]
         public async Task Delete_InvalidProduct_ReturnError(int id)
         {
 
-            // ===== Arrage =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -599,6 +614,7 @@ namespace SmileShop.Test.UnitTest
 
         // Delete_ValidProduct_ReturnDataWithSaveChanged
         [DataTestMethod]
+        [TestCategory("Delete")]
         [DataRow(1)]
         [DataRow(4)]
         [DataRow(10)]
@@ -606,7 +622,7 @@ namespace SmileShop.Test.UnitTest
         public async Task Delete_ValidProduct_ReturnDataWithSaveChanged(int id)
         {
 
-            // ===== Arrage =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();

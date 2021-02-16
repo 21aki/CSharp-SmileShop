@@ -32,6 +32,7 @@ namespace SmileShop.Test.UnitTest
         /// it must return suscess with error message
         /// </summary>
         [TestMethod]
+        [TestCategory("GetAll")]
         [ExpectedException(typeof(InvalidOperationException), "Product Group is not Exist")]
         public async Task GetAll_NoData_ReturnErrorMessage()
         {
@@ -59,6 +60,7 @@ namespace SmileShop.Test.UnitTest
 
         // GetAll_HaveData_ReturnResultWithPagination
         [TestMethod]
+        [TestCategory("GetAll")]
         public async Task GetAll_HaveData_ReturnResultWithPagination()
         {
             /// ===== Arrange =====
@@ -102,6 +104,8 @@ namespace SmileShop.Test.UnitTest
         }
 
         // GetAll_ReachUnexistPage_ReturnResultWithPagination
+        [TestMethod]
+        [TestCategory("GetAll")]
         [ExpectedException(typeof(InvalidOperationException), "Product Group is not Exist")]
         public async Task GetAll_ReachUnexistPage_ReturnResultWithPagination()
         {
@@ -136,6 +140,7 @@ namespace SmileShop.Test.UnitTest
 
         // GetAll_CanFilterByName_ReturnFilteredListOfProductGroup
         [TestMethod]
+        [TestCategory("GetAll")]
         public async Task GetAll_CanFilterByName_ReturnFilteredListOfProductGroup()
         {
 
@@ -185,6 +190,7 @@ namespace SmileShop.Test.UnitTest
 
         // GetAll_FilterIsNotContainInDatabase_ReturnError
         [TestMethod]
+        [TestCategory("GetAll")]
         [ExpectedException(typeof(InvalidOperationException), "Product Group is not Exist")]
         public async Task GetAll_FilterIsNotContainInDatabase_ReturnError()
         {
@@ -225,6 +231,7 @@ namespace SmileShop.Test.UnitTest
 
         // GetList_NoData_ReturnErrorMessage
         [TestMethod]
+        [TestCategory("GetList")]
         [ExpectedException(typeof(InvalidOperationException), "Product Group is not Exist")]
         public async Task GetList_NoData_ReturnError()
         {
@@ -254,6 +261,7 @@ namespace SmileShop.Test.UnitTest
 
         // GetList_HaveNoFilter_ReturnError
         [TestMethod]
+        [TestCategory("GetList")]
         [ExpectedException(typeof(ArgumentNullException))]
         public async Task GetList_HaveNoFilter_ReturnError()
         {
@@ -281,6 +289,7 @@ namespace SmileShop.Test.UnitTest
 
         // GetList_HaveDataAndFilter_ReturnFilteredListOfProductGroup <- (Merge) GetList_NoFilter_ReturnErrorMessage
         [TestMethod]
+        [TestCategory("GetList")]
         public async Task GetList_HaveDataAndFilter_ReturnFilteredListOfProductGroup()
         {
 
@@ -367,6 +376,7 @@ namespace SmileShop.Test.UnitTest
 
         }
         [TestMethod]
+        [TestCategory("GetList")]
         [ExpectedException(typeof(InvalidOperationException), "Product Group is not Exist")]
         public async Task GetList_FilterIsNotContainInDatabase_ReturnError()
         {
@@ -399,6 +409,7 @@ namespace SmileShop.Test.UnitTest
         // Get_NoData_ReturnErrorMessage
         // + (merge) Get_ProductIdIsLessOrEqualZero_ReturnErrorMessage
         [TestMethod]
+        [TestCategory("Get")]
         public async Task Get_ProductGroupValidation_ReturnError()
         {
 
@@ -465,6 +476,7 @@ namespace SmileShop.Test.UnitTest
         // + (merge) Get_ProductIdIsLessOrEqualZero_ReturnErrorMessage
         // + (merge) Get_HaveDataButIdIsNotExist_ReturnErrorMessage
         [TestMethod]
+        [TestCategory("Get")]
         public async Task Get_HaveDataAndProductID_ReturnProductGroupWithSameId()
         {
 
@@ -561,6 +573,7 @@ namespace SmileShop.Test.UnitTest
 
         // Add_NoLoginUser_ReturnErrorMessage
         [TestMethod]
+        [TestCategory("Add")]
         public async Task Add_NoLoginUser_ReturnErrorMessage()
         {
 
@@ -603,6 +616,7 @@ namespace SmileShop.Test.UnitTest
 
         // Add_SentBlankProductGroupName_ReturnErrorMessage
         [TestMethod]
+        [TestCategory("Add")]
         public async Task Add_SentBlankProductGroupName_ReturnErrorMessage()
         {
             /// ===== Arrange =====
@@ -644,6 +658,7 @@ namespace SmileShop.Test.UnitTest
 
         // Add_WithData_ReturnAddedResult
         [TestMethod]
+        [TestCategory("Add")]
         public async Task Add_WithData_ReturnAddedResult()
         {
 
@@ -691,6 +706,7 @@ namespace SmileShop.Test.UnitTest
 
         // Edit_SentBlankProductGroupName_ReturnErrorMessage
         [TestMethod]
+        [TestCategory("Edit")]
         [ExpectedException(typeof(ArgumentNullException))]
         public async Task Edit_SentBlankProductGroupName_ReturnErrorMessage()
         {
@@ -719,6 +735,7 @@ namespace SmileShop.Test.UnitTest
 
         // Edit_ProductIdIsLessOrEqualZero_ReturnErrorMessage
         [TestMethod]
+        [TestCategory("Edit")]
         public async Task Edit_ProductIdIsLessOrEqualZero_ReturnErrorMessage()
         {
 
@@ -769,6 +786,7 @@ namespace SmileShop.Test.UnitTest
 
         // Edit_NoData_ReturnErrorMessage
         [TestMethod]
+        [TestCategory("Edit")]
         [ExpectedException(typeof(InvalidOperationException))]
         public async Task Edit_NoData_ReturnErrorMessage()
         {
@@ -799,6 +817,7 @@ namespace SmileShop.Test.UnitTest
         // Edit_WithData_ReturnEditedResult
         // + (merge) Edit_HaveDataButIdIsNotExist_ReturnErrorMessage
         [TestMethod]
+        [TestCategory("Edit")]
         public async Task Edit_WithData_ReturnEditedResult()
         {
 
@@ -933,6 +952,7 @@ namespace SmileShop.Test.UnitTest
         // Delete_NoData_ReturnErrorMessage
         // +(merge) Delete_ProductIdIsLessOrEqualZero_ReturnErrorMessage
         [TestMethod]
+        [TestCategory("Delete")]
         public async Task Delete_NoData_ReturnErrorMessage()
         {
 
@@ -1006,6 +1026,7 @@ namespace SmileShop.Test.UnitTest
         // Delete_WithID_ReturnDeletedResult
         // + (merge) Delete_HaveDataButIdIsNotExist_ReturnErrorMessage
         [TestMethod]
+        [TestCategory("Delete")]
         public async Task Delete_WithID_ReturnDeletedResult()
         {
 

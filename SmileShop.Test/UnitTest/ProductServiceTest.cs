@@ -9,6 +9,7 @@ using SmileShop.Models;
 using SmileShop.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
@@ -72,8 +73,12 @@ namespace SmileShop.Test.UnitTest
             // ===== Act ======
             var accContext = BuildContext(dbName);
             var service = new ProductServices(accContext, mapper, httpContext.Object);
+            var stopWatch = Stopwatch.StartNew();
             var result = await service.GetAll(new PaginationDto { Page = page }, new ProductFilterDTO(), new DataOrderDTO());
+            stopWatch.Stop();
+            TimeSpan elapsedTime = stopWatch.Elapsed;
 
+            Console.WriteLine($"Time = {elapsedTime.TotalMilliseconds}");
             // ===== Assert =====
             Assert.IsTrue(result.IsSuccess);
             Assert.AreEqual(result.TotalAmountRecords, 15);
@@ -540,7 +545,7 @@ namespace SmileShop.Test.UnitTest
 
             var editData = await assContext.Product.Where(_ => _.Id == id).FirstAsync();
 
-            Assert.AreEqual(result.Data.Group.Id, editData.GroupId);
+            Assert.AreEqual(result.Data.GroupId, editData.GroupId);
             Assert.AreEqual(result.Data.Name, editData.Name);
             Assert.AreEqual(result.Data.Price, editData.Price);
 

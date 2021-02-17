@@ -37,7 +37,7 @@ namespace SmileShop.Test.IntegratedTest
             var dbName = Guid.NewGuid().ToString();
             var factory = BuildWebApplicationFactory(dbName);
             var client = factory.CreateClient();
-            var url = "api/Products/groups";
+            var url = "api/products/groups";
 
             // ===== Act =====
             var response = await client.GetAsync(url);
@@ -46,6 +46,7 @@ namespace SmileShop.Test.IntegratedTest
             response.EnsureSuccessStatusCode();
             var productGroup = JsonConvert.DeserializeObject<ServiceResponseWithPagination<ProductGroupDTO>>(await response.Content.ReadAsStringAsync());
             Assert.IsNull(productGroup.Data);
+            Assert.IsFalse(productGroup.IsSuccess);
         }
 
         [DataTestMethod]
@@ -69,7 +70,7 @@ namespace SmileShop.Test.IntegratedTest
             // Build API & Client
             var factory = BuildWebApplicationFactory(dbName);
             var client = factory.CreateClient();
-            var url = $"api/Products/groups?page={page}&RecordsPerPage=3";
+            var url = $"api/products/groups?page={page}&RecordsPerPage=3";
 
             // ===== Act =====
             var response = await client.GetAsync(url);
@@ -110,7 +111,7 @@ namespace SmileShop.Test.IntegratedTest
             // Build API & Client
             var factory = BuildWebApplicationFactory(dbName);
             var client = factory.CreateClient();
-            var url = $"api/Products/groups?filter={filter}";
+            var url = $"api/products/groups?filter={filter}";
 
             // ===== Act =====
             var response = await client.GetAsync(url);
@@ -142,7 +143,7 @@ namespace SmileShop.Test.IntegratedTest
             // Build API & Client
             var factory = BuildWebApplicationFactory(dbName);
             var client = factory.CreateClient();
-            var url = $"api/Products/groups?OrderBy=Id&Sort=desc";
+            var url = $"api/products/groups?OrderBy=Id&Sort=desc";
 
             // ===== Act =====
             var response = await client.GetAsync(url);
@@ -175,7 +176,7 @@ namespace SmileShop.Test.IntegratedTest
             // Build API & Client
             var factory = BuildWebApplicationFactory(dbName);
             var client = factory.CreateClient();
-            var url = $"api/Products/groups/{id}";
+            var url = $"api/products/groups/{id}";
 
             // ===== Act =====
             var response = await client.GetAsync(url);
@@ -198,7 +199,7 @@ namespace SmileShop.Test.IntegratedTest
             // Build API & Client
             var factory = BuildWebApplicationFactory(dbName);
             var client = factory.CreateClient();
-            var url = $"api/Products/groups/99";
+            var url = $"api/products/groups/99";
 
             // ===== Act =====
             var response = await client.GetAsync(url);
@@ -233,7 +234,7 @@ namespace SmileShop.Test.IntegratedTest
             // Build API & Client
             var factory = BuildWebApplicationFactory(dbName);
             var client = factory.CreateClient();
-            var url = $"api/Products/groups/{id}";
+            var url = $"api/products/groups/{id}";
 
             var data = await context.ProductGroup.Where(_ => _.Id == id).FirstAsync();
 
@@ -262,7 +263,7 @@ namespace SmileShop.Test.IntegratedTest
             // Build API & Client
             var factory = BuildWebApplicationFactory(dbName);
             var client = factory.CreateClient();
-            var url = $"api/Products/groups";
+            var url = $"api/products/groups";
 
             var newProductGroup = new ProductGroupAddDTO { Name = "New Product Group 1", Status = true };
             var stringPayload = await Task.Run(() => JsonConvert.SerializeObject(newProductGroup));
@@ -315,7 +316,7 @@ namespace SmileShop.Test.IntegratedTest
 
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{bearer}");
 
-            var url = $"api/Products/groups";
+            var url = $"api/products/groups";
 
             // ===== Act =====
             var response = await client.PostAsync(url, httpContent);
@@ -364,7 +365,7 @@ namespace SmileShop.Test.IntegratedTest
 
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{bearer}");
 
-            var url = $"api/Products/groups";
+            var url = $"api/products/groups";
 
             // ===== Act =====
             var response = await client.PostAsync(url, httpContent);

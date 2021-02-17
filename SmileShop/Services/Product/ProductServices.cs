@@ -31,7 +31,7 @@ namespace SmileShop.Services
             var query = _dbContext.Product.AsQueryable();
 
             // Filtering data
-            query = filter(query, productFilter);
+            query = Filter(query, productFilter);
 
             // Ordering
             if (!(ordering is null))
@@ -59,7 +59,7 @@ namespace SmileShop.Services
             var paginationResult = await _httpContext.HttpContext.InsertPaginationParametersInResponse(query, pagination.RecordsPerPage, pagination.Page);
 
             // Generate result
-            var result = await query.Paginate(pagination).Include(entity => entity.CreatedByUser).Include(entity => entity.Group).ToListAsync();
+            var result = await query.Paginate(pagination).Include(entity => entity.CreatedByUser.Products).Include(entity => entity.Group).ToListAsync();
 
             // Return error if count is 0
             if (result.Count == 0)
@@ -80,7 +80,7 @@ namespace SmileShop.Services
 
             // Gettering data
             var data = await _dbContext.Product
-                                       .Include(entity => entity.CreatedByUser)
+                                       .Include(entity => entity.CreatedByUser.Products)
                                        .Include(entity => entity.Group)
                                        .Where(x => x.Id == productId)
                                        .FirstOrDefaultAsync();
@@ -119,7 +119,8 @@ namespace SmileShop.Services
             var dto = _mapper.Map<ProductDTO>(product);
 
             // Add User Detail
-            dto.CreatedBy = new UserDto { Id = GetUserId(), Username = GetUsername() };
+            dto.CreatedByUserID = Guid.Parse(GetUserId());
+            dto.CreatedByUserName = GetUsername();
 
             // Return result
             return ResponseResult.Success<ProductDTO>(dto);
@@ -134,7 +135,7 @@ namespace SmileShop.Services
 
             // Gettering data
             var data = await _dbContext.Product
-                                       .Include(entity => entity.CreatedByUser)
+                                       .Include(entity => entity.CreatedByUser.Products)
                                        .Include(entity => entity.Group)
                                        .Where(x => x.Id == productId)
                                        .FirstOrDefaultAsync();
@@ -168,7 +169,7 @@ namespace SmileShop.Services
 
             // Gettering data
             var data = await _dbContext.Product
-                                       .Include(entity => entity.CreatedByUser)
+                                       .Include(entity => entity.CreatedByUser.Products)
                                        .Include(entity => entity.Group)
                                        .Where(x => x.Id == productId)
                                        .FirstOrDefaultAsync();
@@ -188,7 +189,7 @@ namespace SmileShop.Services
             return ResponseResult.Success<ProductDTO>(dto);
         }
 
-        public IQueryable<Product> filter(IQueryable<Product> query, ProductFilterDTO filter)
+        public IQueryable<Product> Filter(IQueryable<Product> query, ProductFilterDTO filter)
         {
 
             if (!(filter.Name is null))

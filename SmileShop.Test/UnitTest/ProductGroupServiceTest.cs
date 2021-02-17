@@ -9,6 +9,7 @@ using SmileShop.Models;
 using SmileShop.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -33,10 +34,9 @@ namespace SmileShop.Test.UnitTest
         /// </summary>
         [TestMethod]
         [TestCategory("GetAll")]
-        [ExpectedException(typeof(InvalidOperationException), "Product Group is not Exist")]
         public async Task GetAll_NoData_ReturnErrorMessage()
         {
-            /// ===== Arrange =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -50,12 +50,34 @@ namespace SmileShop.Test.UnitTest
             var filter = "";
             var order = new DataOrderDTO();
 
-            /// ===== Act =====
+            var expectEx = false;
+
+            // ===== Act =====
+            long startTicks = Stopwatch.GetTimestamp();
+            try
+            {
             var service = new ProductGroupServices(context, mapper, httpContext.Object);
             var result = await service.GetAll(pagination, filter, order);
 
-            /// ==== Assert =====
-            /// Expected Exception
+            } catch (InvalidOperationException)
+            {
+                expectEx = true;
+            } catch (Exception)
+            {
+                throw;
+            }
+
+
+            long endTicks = Stopwatch.GetTimestamp();
+            double elapsedSeconds = (endTicks - startTicks) * 1.0 / Stopwatch.Frequency;
+
+            Console.WriteLine($"Start time : {startTicks}");
+            Console.WriteLine($"End time : {endTicks}");
+            Console.WriteLine($"Time Used : {elapsedSeconds}");
+
+            // ==== Assert =====
+            // Expected Exception
+            Assert.IsTrue(expectEx);
         }
 
         // GetAll_HaveData_ReturnResultWithPagination
@@ -63,7 +85,7 @@ namespace SmileShop.Test.UnitTest
         [TestCategory("GetAll")]
         public async Task GetAll_HaveData_ReturnResultWithPagination()
         {
-            /// ===== Arrange =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -84,13 +106,13 @@ namespace SmileShop.Test.UnitTest
             string filter = null;
             DataOrderDTO order = new DataOrderDTO();
 
-            /// ===== Act =====
+            // ===== Act =====
             var service = new ProductGroupServices(actContext, mapper, httpContext.Object);
 
             var result1 = await service.GetAll(pagination, filter, order);
             var result2 = await service.GetAll(pagination2, filter, order);
 
-            /// ===== Assert =====
+            // ===== Assert =====
             // Result 1 : Return data on 1st Page
             Assert.AreEqual(result1.IsSuccess, true);
             Assert.AreEqual(result1.Data[0].Id, 1);
@@ -109,7 +131,7 @@ namespace SmileShop.Test.UnitTest
         [ExpectedException(typeof(InvalidOperationException), "Product Group is not Exist")]
         public async Task GetAll_ReachUnexistPage_ReturnResultWithPagination()
         {
-            /// ===== Arrange =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -128,12 +150,12 @@ namespace SmileShop.Test.UnitTest
             string filter = null;
             DataOrderDTO order = new DataOrderDTO();
 
-            /// ===== Act =====
+            // ===== Act =====
             var service = new ProductGroupServices(actContext, mapper, httpContext.Object);
 
             var result = await service.GetAll(pagination, filter, order);
 
-            /// ===== Assert =====
+            // ===== Assert =====
             // Result : Check on Page Doesn't exist
             // Expected Exception
         }
@@ -144,7 +166,7 @@ namespace SmileShop.Test.UnitTest
         public async Task GetAll_CanFilterByName_ReturnFilteredListOfProductGroup()
         {
 
-            /// ===== Arrange =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -166,14 +188,14 @@ namespace SmileShop.Test.UnitTest
             // New context
             var actContext = BuildContext(dbName);
 
-            /// ===== Act =====
+            // ===== Act =====
 
             var service = new ProductGroupServices(actContext, mapper, httpContext.Object);
 
             var result = await service.GetAll(pagination, filter1, order);
             var result2 = await service.GetAll(pagination, filter2, order);
 
-            /// ===== Assert =====
+            // ===== Assert =====
 
             // Result 1 : Exact filter
             Assert.IsTrue(result.IsSuccess);
@@ -195,7 +217,7 @@ namespace SmileShop.Test.UnitTest
         public async Task GetAll_FilterIsNotContainInDatabase_ReturnError()
         {
 
-            /// ===== Arrange =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -216,13 +238,13 @@ namespace SmileShop.Test.UnitTest
             // New context
             var actContext = BuildContext(dbName);
 
-            /// ===== Act =====
+            // ===== Act =====
 
             var service = new ProductGroupServices(actContext, mapper, httpContext.Object);
             var result = await service.GetAll(pagination, filter, order);
 
 
-            /// ===== Assert =====
+            // ===== Assert =====
 
 
             // Result : Filter that not contain in Data
@@ -293,7 +315,7 @@ namespace SmileShop.Test.UnitTest
         public async Task GetList_HaveDataAndFilter_ReturnFilteredListOfProductGroup()
         {
 
-            /// ===== Arrange =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -315,7 +337,7 @@ namespace SmileShop.Test.UnitTest
             bool expectEx2 = false;
             bool expectEx3 = false;
 
-            /// ===== Act =====
+            // ===== Act =====
             var service = new ProductGroupServices(actContext, mapper, httpContext.Object);
 
             try
@@ -353,7 +375,7 @@ namespace SmileShop.Test.UnitTest
             }
 
 
-            /// ===== Assert =====
+            // ===== Assert =====
 
 
             // Result 1 : Filter is presented, And serach for "Group"
@@ -381,7 +403,7 @@ namespace SmileShop.Test.UnitTest
         public async Task GetList_FilterIsNotContainInDatabase_ReturnError()
         {
 
-            /// ===== Arrange =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -400,7 +422,7 @@ namespace SmileShop.Test.UnitTest
 
             var result = await service.GetList(Guid.NewGuid().ToString());
 
-            /// ===== Assert =====
+            // ===== Assert =====
             // Result : Used filter that not contain in database
             // Expected Exception
 
@@ -413,7 +435,7 @@ namespace SmileShop.Test.UnitTest
         public async Task Get_ProductGroupValidation_ReturnError()
         {
 
-            /// ===== Arrange =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -430,7 +452,7 @@ namespace SmileShop.Test.UnitTest
             bool expectEx2 = false;
             bool expectEx3 = false;
 
-            /// ===== Act =====
+            // ===== Act =====
             var service = new ProductGroupServices(context, mapper, httpContext.Object);
 
             try
@@ -460,7 +482,7 @@ namespace SmileShop.Test.UnitTest
                 expectEx3 = true;
             }
 
-            /// ==== Assert =====
+            // ==== Assert =====
 
             // Result 1 : Id (-5) must be greater than 0, then error
             Assert.IsTrue(expectEx1);
@@ -480,7 +502,7 @@ namespace SmileShop.Test.UnitTest
         public async Task Get_HaveDataAndProductID_ReturnProductGroupWithSameId()
         {
 
-            /// ===== Arrange =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -508,7 +530,7 @@ namespace SmileShop.Test.UnitTest
 
             var actContext = BuildContext(dbName);
 
-            /// ===== Act =====
+            // ===== Act =====
             var service = new ProductGroupServices(actContext, mapper, httpContext.Object);
 
             try
@@ -548,7 +570,7 @@ namespace SmileShop.Test.UnitTest
                 expectEx4 = true;
             }
 
-            /// ==== Assert =====
+            // ==== Assert =====
 
             // Result 1 : Id (-5) must be greater than 0, then error
             Assert.IsNull(result1.Data);
@@ -557,7 +579,7 @@ namespace SmileShop.Test.UnitTest
             // Result 2 :  Have a data & ProductID, It's must return ProductGroup With Same Id
             Assert.IsTrue(result2.IsSuccess);
             Assert.IsNotNull(result2.Data);
-            Assert.AreEqual(result2.Data.Id, productGroupId2);
+            Assert.AreEqual(productGroupId2, result2.Data.Id);
             Assert.IsFalse(expectEx2);
 
             // Result 3 : Have a data but Id is not exist, Return error message
@@ -577,7 +599,7 @@ namespace SmileShop.Test.UnitTest
         public async Task Add_NoLoginUser_ReturnErrorMessage()
         {
 
-            /// ===== Arrange =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -590,7 +612,7 @@ namespace SmileShop.Test.UnitTest
 
             bool expectEx = false;
 
-            /// ===== Act =====
+            // ===== Act =====
             var service = new ProductGroupServices(context, mapper, httpContext.Object);
 
             try
@@ -602,7 +624,7 @@ namespace SmileShop.Test.UnitTest
                 expectEx = true;
             }
 
-            /// ===== Assert =====
+            // ===== Assert =====
 
             // Check that database has no new record
             var resultContext = BuildContext(dbName);
@@ -619,7 +641,7 @@ namespace SmileShop.Test.UnitTest
         [TestCategory("Add")]
         public async Task Add_SentBlankProductGroupName_ReturnErrorMessage()
         {
-            /// ===== Arrange =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -632,7 +654,7 @@ namespace SmileShop.Test.UnitTest
 
             bool expectEx = false;
 
-            /// ===== Act =====
+            // ===== Act =====
             var service = new ProductGroupServices(context, mapper, httpContext.Object);
 
             try
@@ -644,7 +666,7 @@ namespace SmileShop.Test.UnitTest
                 expectEx = true;
             }
 
-            /// ===== Assert =====
+            // ===== Assert =====
 
             // Check that database has no new record
             var resultContext = BuildContext(dbName);
@@ -662,7 +684,7 @@ namespace SmileShop.Test.UnitTest
         public async Task Add_WithData_ReturnAddedResult()
         {
 
-            /// ===== Arrange =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -687,11 +709,11 @@ namespace SmileShop.Test.UnitTest
             loginHttpContext.Setup(_ => _.HttpContext).Returns(loginHttp);
 
 
-            /// ===== Act =====
+            // ===== Act =====
             var service = new ProductGroupServices(context, mapper, loginHttpContext.Object);
             var result = await service.Add(addProductGroup);
 
-            /// ===== Assert =====
+            // ===== Assert =====
 
             // Check that database has new record
             var resultContext = BuildContext(dbName);
@@ -711,7 +733,7 @@ namespace SmileShop.Test.UnitTest
         public async Task Edit_SentBlankProductGroupName_ReturnErrorMessage()
         {
 
-            /// ===== Arrange =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -724,12 +746,12 @@ namespace SmileShop.Test.UnitTest
             var productGroupId = 1;
             var editProductGroup = new ProductGroupAddDTO { };
 
-            /// ===== Act =====
+            // ===== Act =====
 
             var service = new ProductGroupServices(context, mapper, httpContext.Object);
             var result = await service.Edit(productGroupId, editProductGroup);
 
-            /// ===== Assert =====
+            // ===== Assert =====
             // Except Exception
         }
 
@@ -739,7 +761,7 @@ namespace SmileShop.Test.UnitTest
         public async Task Edit_ProductIdIsLessOrEqualZero_ReturnErrorMessage()
         {
 
-            /// ===== Arrange =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -754,7 +776,7 @@ namespace SmileShop.Test.UnitTest
             bool expectEx1 = false;
             bool expectEx2 = false;
 
-            /// ===== Act =====
+            // ===== Act =====
 
             var service = new ProductGroupServices(context, mapper, httpContext.Object);
             try
@@ -775,7 +797,7 @@ namespace SmileShop.Test.UnitTest
                 expectEx2 = true;
             }
 
-            /// ===== Assert =====
+            // ===== Assert =====
 
             // Result 1 : When Id = 0
             Assert.IsTrue(expectEx1);
@@ -791,7 +813,7 @@ namespace SmileShop.Test.UnitTest
         public async Task Edit_NoData_ReturnErrorMessage()
         {
 
-            /// ===== Arrange =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -803,12 +825,12 @@ namespace SmileShop.Test.UnitTest
 
             var editProductGroup = new ProductGroupAddDTO { Name = "Test Product Group" };
 
-            /// ===== Act =====
+            // ===== Act =====
 
             var service = new ProductGroupServices(context, mapper, httpContext.Object);
             var result = await service.Edit(1, editProductGroup);
 
-            /// ===== Assert =====
+            // ===== Assert =====
 
             // No data in database must return an error message
             // Expected Exception
@@ -821,7 +843,7 @@ namespace SmileShop.Test.UnitTest
         public async Task Edit_WithData_ReturnEditedResult()
         {
 
-            /// ===== Arrange =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -862,7 +884,7 @@ namespace SmileShop.Test.UnitTest
                                                  .Where(x => x.Id == productGroupId3)
                                                  .FirstOrDefaultAsync();
 
-            /// ===== Act =====
+            // ===== Act =====
 
             var actContext = BuildContext(dbName);
 
@@ -897,7 +919,7 @@ namespace SmileShop.Test.UnitTest
                 expectEx3 = true;
             }
 
-            /// ===== Assert =====
+            // ===== Assert =====
 
             var assContext = BuildContext(dbName);
 
@@ -956,7 +978,7 @@ namespace SmileShop.Test.UnitTest
         public async Task Delete_NoData_ReturnErrorMessage()
         {
 
-            /// ===== Arrange =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -974,7 +996,7 @@ namespace SmileShop.Test.UnitTest
             bool expectEx2 = false;
             bool expectEx3 = false;
 
-            /// ===== Act =====
+            // ===== Act =====
             var result1 = new ServiceResponse<ProductGroupDTO>();
             var result2 = new ServiceResponse<ProductGroupDTO>();
             var result3 = new ServiceResponse<ProductGroupDTO>();
@@ -1008,7 +1030,7 @@ namespace SmileShop.Test.UnitTest
                 expectEx3 = true;
             }
 
-            /// ===== Assert =====
+            // ===== Assert =====
 
             // Result 1 : No data in database must return an error message
             Assert.IsNull(result1.Data);
@@ -1031,7 +1053,7 @@ namespace SmileShop.Test.UnitTest
         {
 
 
-            /// ===== Arrange =====
+            // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
             var context = BuildContext(dbName);
             var mapper = BuildMap();
@@ -1065,7 +1087,7 @@ namespace SmileShop.Test.UnitTest
             var result2 = new ServiceResponse<ProductGroupDTO>();
             var result3 = new ServiceResponse<ProductGroupDTO>();
 
-            /// ===== Act =====
+            // ===== Act =====
 
             var actContext = BuildContext(dbName);
             var service = new ProductGroupServices(actContext, mapper, httpContext.Object);
@@ -1104,7 +1126,7 @@ namespace SmileShop.Test.UnitTest
             }
 
 
-            /// ===== Assert =====
+            // ===== Assert =====
 
             var assContext = BuildContext(dbName);
 

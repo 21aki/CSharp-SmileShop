@@ -15,9 +15,9 @@ namespace SmileShop.DTOs
         public decimal Discount { get; set; }
         public decimal Net { get; set; }
 
-        public UserDto CreatedBy { get; set; }
+        public Guid CreatedByUserId { get; set; }
+        public string CreatedByUserName { get; set; }
         public DateTime CreatedDate { get; set; }
 
-        public ICollection<OrderDetailDTO> OrderDetails { get; set; }
     }
 }

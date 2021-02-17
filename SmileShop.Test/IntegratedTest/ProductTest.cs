@@ -14,6 +14,14 @@ using System.Threading.Tasks;
 
 namespace SmileShop.Test.IntegratedTest
 {
+    /**
+     * Test Name : ProductTest
+     * Created by : AkiAkira
+     * Version 1.0 : 16 Feb 2021.
+     * 
+     * Test on /api/Products
+     */
+
     [TestClass]
     public class ProductTest : TestBase
     {
@@ -27,7 +35,7 @@ namespace SmileShop.Test.IntegratedTest
             var dbName = Guid.NewGuid().ToString();
             var factory = BuildWebApplicationFactory(dbName);
             var client = factory.CreateClient();
-            var url = "api/Products";
+            var url = "api/products";
 
             // ===== Act =====
             var response = await client.GetAsync(url);
@@ -65,7 +73,7 @@ namespace SmileShop.Test.IntegratedTest
             // Generate API & Client
             var factory = BuildWebApplicationFactory(dbName);
             var client = factory.CreateClient();
-            var url = $"api/Products?page={page}";
+            var url = $"api/products?page={page}";
 
             // ===== Act ======
             var response = await client.GetAsync(url);
@@ -111,7 +119,7 @@ namespace SmileShop.Test.IntegratedTest
             // Generate API & Client
             var factory = BuildWebApplicationFactory(dbName);
             var client = factory.CreateClient();
-            var url = $"api/Products?Name={filter}";
+            var url = $"api/products?Name={filter}";
 
             // ===== Act ======
             var response = await client.GetAsync(url);
@@ -161,7 +169,7 @@ namespace SmileShop.Test.IntegratedTest
             // Generate API & Client
             var factory = BuildWebApplicationFactory(dbName);
             var client = factory.CreateClient();
-            var url = $"api/Products?OrderBy=Name&sort=asd";
+            var url = $"api/products?OrderBy=Name&sort=asd";
 
             // ===== Act ======
             var response = await client.GetAsync(url);
@@ -194,7 +202,7 @@ namespace SmileShop.Test.IntegratedTest
             // Generate API & Client
             var factory = BuildWebApplicationFactory(dbName);
             var client = factory.CreateClient();
-            var url = $"api/Products/{id}";
+            var url = $"api/products/{id}";
 
 
             // ===== Act ======
@@ -223,7 +231,7 @@ namespace SmileShop.Test.IntegratedTest
             // Generate API & Client
             var factory = BuildWebApplicationFactory(dbName);
             var client = factory.CreateClient();
-            var url = $"api/Products/{id}";
+            var url = $"api/products/{id}";
 
 
             // ===== Act ======
@@ -261,7 +269,7 @@ namespace SmileShop.Test.IntegratedTest
             // Generate API & Client
             var factory = BuildWebApplicationFactory(dbName);
             var client = factory.CreateClient();
-            var url = $"api/Products/{id}";
+            var url = $"api/products/{id}";
 
             // ===== Act ======
             var response = await client.GetAsync(url);
@@ -312,7 +320,7 @@ namespace SmileShop.Test.IntegratedTest
             // Generate API & Client
             var factory = BuildWebApplicationFactory(dbName);
             var client = factory.CreateClient();
-            var url = $"api/Products";
+            var url = $"api/products";
 
             // Login
             //var bearer = await SimulateLogin(client);
@@ -363,7 +371,7 @@ namespace SmileShop.Test.IntegratedTest
             // Generate API & Client
             var factory = BuildWebApplicationFactory(dbName);
             var client = factory.CreateClient();
-            var url = $"api/Products";
+            var url = $"api/products";
 
             // Login
             var bearer = await SimulateLogin(client);
@@ -414,7 +422,7 @@ namespace SmileShop.Test.IntegratedTest
             // Generate API & Client
             var factory = BuildWebApplicationFactory(dbName);
             var client = factory.CreateClient();
-            var url = $"api/Products";
+            var url = $"api/products";
 
             // Login
             var bearer = await SimulateLogin(client);
@@ -469,7 +477,7 @@ namespace SmileShop.Test.IntegratedTest
             // Generate API & Client
             var factory = BuildWebApplicationFactory(dbName);
             var client = factory.CreateClient();
-            var url = $"api/Products/{id}";
+            var url = $"api/products/{id}";
 
             // Login
             //var bearer = await SimulateLogin(client);
@@ -522,7 +530,7 @@ namespace SmileShop.Test.IntegratedTest
             // Generate API & Client
             var factory = BuildWebApplicationFactory(dbName);
             var client = factory.CreateClient();
-            var url = $"api/Products/{id}";
+            var url = $"api/products/{id}";
 
             // Login
             //var bearer = await SimulateLogin(client);
@@ -586,7 +594,7 @@ namespace SmileShop.Test.IntegratedTest
             // Generate API & Client
             var factory = BuildWebApplicationFactory(dbName);
             var client = factory.CreateClient();
-            var url = $"api/Products/{id}";
+            var url = $"api/products/{id}";
 
             // Login
             //var bearer = await SimulateLogin(client);
@@ -611,7 +619,7 @@ namespace SmileShop.Test.IntegratedTest
 
             var editData = await assContext.Product.Where(_ => _.Id == id).FirstAsync();
 
-            Assert.AreEqual(result.Data.Group.Id, editData.GroupId);
+            Assert.AreEqual(result.Data.GroupId, editData.GroupId);
             Assert.AreEqual(result.Data.Name, editData.Name);
             Assert.AreEqual(result.Data.Price, editData.Price);
 
@@ -651,7 +659,7 @@ namespace SmileShop.Test.IntegratedTest
             // Generate API & Client
             var factory = BuildWebApplicationFactory(dbName);
             var client = factory.CreateClient();
-            var url = $"api/Products/{id}";
+            var url = $"api/products/{id}";
 
             // Login
             //var bearer = await SimulateLogin(client);
@@ -702,7 +710,7 @@ namespace SmileShop.Test.IntegratedTest
             // Generate API & Client
             var factory = BuildWebApplicationFactory(dbName);
             var client = factory.CreateClient();
-            var url = $"api/Products/{id}";
+            var url = $"api/products/{id}";
 
             // ===== Act ======
             var response = await client.DeleteAsync(url);

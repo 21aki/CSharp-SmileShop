@@ -12,9 +12,19 @@ using System.Threading.Tasks;
 
 namespace SmileShop.Test.UnitTest
 {
+    /**
+     * Test Name : StockServiceTest
+     * Created by : AkiAkira
+     * Version 1.0 : 15 Feb 2021.
+     * 
+     * Test on StockService
+     */
+
     [TestClass]
     public class StockServiceTest : TestBase
     {
+
+        #region Get
         // Get_InvalidProductID_ReturnError // ArgumentOutOfRangeException
         [DataTestMethod]
         [DataRow(0)]
@@ -116,7 +126,9 @@ namespace SmileShop.Test.UnitTest
             Assert.IsNotNull(result.Data);
             Assert.AreEqual($"Product ({data.Name}) requested record successfully", result.Message);
         }
+        #endregion
 
+        #region GetStockHistory
         // GetStockHistory_InvalidProductID_ReturnError // ArgumentOutOfRangeException
         [DataTestMethod]
         [DataRow(0)]
@@ -218,7 +230,9 @@ namespace SmileShop.Test.UnitTest
             Assert.AreEqual($"Product ({data.Name}) requested record successfully", result.Message);
             Assert.AreEqual(stockData, result.Data.Count());
         }
+        #endregion
 
+        #region Set
         // Set_NoUserPresented_ReturnError // UnauthorizedAccessException
         [DataTestMethod]
         [DataRow(1, 5, 0 , "Test")]
@@ -534,7 +548,9 @@ namespace SmileShop.Test.UnitTest
             Assert.AreEqual(balance, assStock.StockBefore);
             Assert.AreEqual(balance + debit - credit, assStock.StockAfter);
         }
+        #endregion
 
+        #region ProductIsSufficient
         // ProductIsSufficient_InvalidProductID_ReturnError // ArgumentOutOfRangeException
         [DataTestMethod]
         [DataRow(0, 0, 40)]
@@ -649,6 +665,6 @@ namespace SmileShop.Test.UnitTest
             Assert.AreEqual(balance, resultBalance);
         }
 
-
+        #endregion
     }
 }

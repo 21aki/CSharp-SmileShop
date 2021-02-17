@@ -26,15 +26,24 @@ namespace SmileShop.Models
         [MinLength(5)]
         [MaxLength(50)]
         public string Name { get; set; }
-        
+
+        [Reqired]
         public decimal Price { get; set; }
+
+        [Reqired]
         public int StockCount { get; set; }
-        public Guid CreatedByUserId { get; set; }
+
+        [Reqired]
+        public Guid? CreatedByUserId { get; set; }
+
+        [Reqired]
         public DateTime CreatedDate { get; set; }
+        
+        [Reqired]
         public bool? Status { get; set; }
 
         public virtual ProductGroup Group { get; set; }
-        public virtual User CreatedByUser { get; set; }
+        public virtual User? CreatedByUser { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
         public virtual ICollection<Stock> Stock { get; set; }
 

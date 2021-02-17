@@ -21,11 +21,14 @@ namespace SmileShop.Models
         [MinLength(5)]
         [MaxLength(50)]
         public string Name { get; set; }
-        public Guid CreatedByUserId { get; set; }
+
+        [Reqired]
+        public Guid? CreatedByUserId { get; set; }
         public DateTime CreatedDate { get; set; }
         public bool Status { get; set; }
 
-        public User CreatedByUser { get; set; }
+        [Reqired]
+        public User? CreatedByUser { get; set; }
         public virtual ICollection<Product> Products { get; set; }
     }
 }

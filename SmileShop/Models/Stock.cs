@@ -37,7 +37,7 @@ namespace SmileShop.Models
         public string Remark { get; set; }
 
         [Required]
-        public Guid CreatedByUserId { get; set; }
+        public Guid? CreatedByUserId { get; set; }
 
         public virtual Product Product { get; set; }
 

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SmileShop.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/products")]
     [ApiController]
     public class ProductsController : ControllerBase
     {
@@ -23,7 +23,7 @@ namespace SmileShop.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> getAll([FromQuery] PaginationDto pagination = null, [FromQuery] ProductFilterDTO filter = null, [FromQuery] DataOrderDTO ordering = null)
+        public async Task<IActionResult> GetAll([FromQuery] PaginationDto pagination = null, [FromQuery] ProductFilterDTO filter = null, [FromQuery] DataOrderDTO ordering = null)
         {
             try
             {

@@ -27,14 +27,14 @@ namespace SmileShop.Services
             _stockServices = stockServices;
         }
 
-        public async Task<ServiceResponseWithPagination<List<OrderOnlyDTO>>> GetAll(PaginationDto pagination = null, OrderFilterDTO OrderFilter = null, DataOrderDTO ordering = null)
+        public async Task<ServiceResponseWithPagination<List<OrderDTO>>> GetAll(PaginationDto pagination = null, OrderFilterDTO OrderFilter = null, DataOrderDTO ordering = null)
         {
 
             // Quering data
             var query = _dbContext.Order.AsQueryable();
 
             // Filtering data
-            query = filter(query, OrderFilter);
+            query = Filter(query, OrderFilter);
 
 
             // Ordering
@@ -74,10 +74,10 @@ namespace SmileShop.Services
                 throw new InvalidOperationException("Order is not Exist");
 
             // Mapping
-            var dto = _mapper.Map<List<OrderOnlyDTO>>(result);
+            var dto = _mapper.Map<List<OrderDTO>>(result);
 
             // Return Results
-            return ResponseResultWithPagination.Success<List<OrderOnlyDTO>>(dto, paginationResult);
+            return ResponseResultWithPagination.Success<List<OrderDTO>>(dto, paginationResult);
         }
 
         public async Task<ServiceResponse<OrderDTO>> Get(int OrderId)
@@ -88,7 +88,6 @@ namespace SmileShop.Services
 
             // Quering data
             var result = await _dbContext.Order
-                                    .Include(o => o.OrderDetails)
                                     .Include(o => o.CreatedByUser)
                                     .Where(o => o.Id == OrderId)
                                     .FirstOrDefaultAsync();
@@ -104,6 +103,29 @@ namespace SmileShop.Services
             // Return Results
             return ResponseResult.Success<OrderDTO>(dto);
         }
+        public async Task<ServiceResponse<List<OrderDetailDTO>>> GetOrderDetails(int OrderId)
+        {
+
+            if (OrderId <= 0)
+                throw new ArgumentOutOfRangeException("OrderId", "Id must be greater than 0.");
+
+            // Quering data
+            var result = await _dbContext.OrderDetail
+                                    .Include(o => o.Product)
+                                    .Where(o => o.OrderId == OrderId)
+                                    .ToListAsync();
+
+            // Return error if count is 0
+            if (result.Count == 0)
+                throw new InvalidOperationException("Order is not Exist");
+
+            // Mapping
+            var dto = _mapper.Map<List<OrderDetailDTO>>(result);
+
+
+            // Return Results
+            return ResponseResult.Success<List<OrderDetailDTO>>(dto);
+        }
 
         public async Task<ServiceResponse<OrderDTO>> Add(OrderAddDTO addOrder)
         {
@@ -114,15 +136,19 @@ namespace SmileShop.Services
             if (addOrder.Discount > 1 || addOrder.Discount < 0)
                 throw new ArgumentOutOfRangeException("Discount", "Discount must be percentage range of 0.00 to 1.00");
 
-            var listOrderDetail = _mapper.Map<List<OrderDetail>>(addOrder.OrderDetails);
+            var listOrderDetail = _mapper.Map<List<OrderDetailProcessDTO>>(addOrder.OrderDetails);
             int orderQuantity = 0;
             decimal orderTotal = 0;
             decimal orderNet = 0;
+
+            if (listOrderDetail.Count == 0)
+                throw new ArgumentNullException("Order Detail", "Order Detail must be exist");
 
             //For each OrderDetail check if Product is sufficient.
 
             for (int i = 0; i < listOrderDetail.Count; i++)
             {
+
                 int balance;
                 decimal price = 0;
 
@@ -130,17 +156,15 @@ namespace SmileShop.Services
                 
                 listOrderDetail[i].Price = price;
                 listOrderDetail[i].DiscountPrice = price * addOrder.Discount;
-                orderQuantity += listOrderDetail[i].Quantity;
-                orderTotal += orderQuantity * price;
+                orderTotal += listOrderDetail[i].Quantity * price;
 
             }
-
+            orderQuantity = listOrderDetail.Sum(_ => _.Quantity);
             orderNet = orderTotal - listOrderDetail.Sum(_ => _.DiscountPrice);
 
             // Create New Order 
             Order newOrder = _mapper.Map<Order>(addOrder);
 
-            newOrder.OrderDetails = listOrderDetail;
             newOrder.CreatedByUserId = Guid.Parse(GetUserId());
             newOrder.CreatedDate = Now();
             newOrder.Total = orderTotal;
@@ -148,6 +172,12 @@ namespace SmileShop.Services
             newOrder.Net = orderNet;
 
             await _dbContext.Order.AddAsync(newOrder);
+            await _dbContext.SaveChangesAsync();
+
+            listOrderDetail.ForEach(_ => _.OrderId = newOrder.Id);
+            newOrder.OrderDetails = _mapper.Map<List<OrderDetail>>(listOrderDetail);
+
+            _dbContext.Order.Update(newOrder);
 
             // Record a stock
             for (int i = 0; i < listOrderDetail.Count; i++)
@@ -162,9 +192,9 @@ namespace SmileShop.Services
             var dto = _mapper.Map<OrderDTO>(newOrder);
 
             // Add User Details
-            dto.CreatedBy = new UserDto { Id = GetUserId(), Username = GetUsername() };
+            dto.CreatedByUserName = GetUsername();
 
-            return ResponseResult.Success<OrderDTO>(dto);
+            return ResponseResult.Success<OrderDTO>(dto,$"/api/orders/{newOrder.Id}/detail");
 
         }
 
@@ -198,7 +228,7 @@ namespace SmileShop.Services
             return ResponseResult.Success<OrderDTO>(dto);
         }
 
-        public IQueryable<Order> filter(IQueryable<Order> query, OrderFilterDTO filter)
+        public IQueryable<Order> Filter(IQueryable<Order> query, OrderFilterDTO filter)
         {
 
             if (!(filter.StartDate is null) && !(filter.EndDate is null))

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SmileShop.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/orders")]
     [ApiController]
     public class OrdersController : ControllerBase
     {
@@ -47,6 +47,21 @@ namespace SmileShop.Controllers
             catch (Exception ex)
             {
                 return Ok(ResponseResult.Failure<OrderDTO>(ex.Message));
+            }
+        }
+
+        [HttpGet("{id}/details")]
+        public async Task<IActionResult> GetOrderDetails(int id)
+        {
+
+            try
+            {
+                var result = await _service.GetOrderDetails(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return Ok(ResponseResult.Failure<List<OrderDetailDTO>>(ex.Message));
             }
         }
 

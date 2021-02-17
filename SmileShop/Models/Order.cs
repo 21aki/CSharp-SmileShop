@@ -30,7 +30,9 @@ namespace SmileShop.Models
 
         [Required]
         public decimal Net { get; set; }
-        public Guid CreatedByUserId { get; set; }
+
+        [Required]
+        public Guid? CreatedByUserId { get; set; }
 
         public virtual User CreatedByUser { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }

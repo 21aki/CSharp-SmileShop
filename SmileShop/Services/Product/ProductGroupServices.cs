@@ -76,7 +76,7 @@ namespace SmileShop.Services
             var paginationResult = await _httpContext.HttpContext.InsertPaginationParametersInResponse(query, pagination.RecordsPerPage, pagination.Page);
 
             // Generate result
-            var result = await query.Paginate(pagination).Include(entity => entity.CreatedByUser).ToListAsync();
+            var result = await query.Paginate(pagination).Include(_=>_.CreatedByUser).ToListAsync();
 
             // Return error if count is 0
             if (result.Count == 0)
@@ -163,7 +163,7 @@ namespace SmileShop.Services
             var dto = _mapper.Map<ProductGroupDTO>(data);
 
             // Add User Detail
-            dto.CreatedBy = new UserDto { Id = GetUserId(), Username = GetUsername() };
+            dto.CreatedByUserName = GetUsername();
 
             // Return result
             return ResponseResult.Success<ProductGroupDTO>(dto, $"Product Group ({data.Name}) have been added successfully");

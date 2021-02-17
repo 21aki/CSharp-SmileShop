@@ -24,27 +24,32 @@ namespace SmileShop
 
             CreateMap<ProductGroupAddDTO, ProductGroup>();
             CreateMap<ProductGroup, ProductGroupDTO>()
-                .ForMember(dto => dto.CreatedBy, e => e.MapFrom(pg => pg.CreatedByUser));
+                .ForMember(dto => dto.CreatedByUserName, e => e.MapFrom(pg => pg.CreatedByUser.Username));
 
 
             CreateMap<ProductAddDTO, Product>();
+            CreateMap<OrderDetailAddDTO, OrderDetail>();
 
             CreateMap<ProductGroup, ProductDTOProductGroup>();
 
             CreateMap<Product, ProductDTO>()
-                .ForMember(dto => dto.CreatedBy, e => e.MapFrom(p => p.CreatedByUser))
-                .ForMember(dto => dto.Group, e => e.MapFrom(p => p.Group));
+                .ForMember(dto => dto.CreatedByUserID, e => e.MapFrom(p => p.CreatedByUser.Id))
+                .ForMember(dto => dto.CreatedByUserName, e => e.MapFrom(p => p.CreatedByUser.Username))
+                .ForMember(dto => dto.GroupName, e => e.MapFrom(p => p.Group.Name));
 
 
             CreateMap<OrderAddDTO, Order>();
-            CreateMap<OrderDetailDTO, OrderDetail>().ReverseMap();
+            CreateMap<OrderDetailAddDTO, OrderDetailProcessDTO>();
+            CreateMap<OrderDetailProcessDTO, OrderDetail>();
+            CreateMap<OrderDetail, OrderDetailDTO>()
+                .ForMember(dto => dto.ProductName, e => e.MapFrom(p => p.Product.Name))
+                .ReverseMap();
 
             CreateMap<Order, OrderOnlyDTO>()
                 .ForMember(dto => dto.CreatedBy, e => e.MapFrom(o => o.CreatedByUser));
 
             CreateMap<Order, OrderDTO>()
-                .ForMember(dto => dto.CreatedBy, e => e.MapFrom(o => o.CreatedByUser))
-                .ForMember(dto => dto.OrderDetails, e=> e.MapFrom(o => o.OrderDetails));
+                .ForMember(dto => dto.CreatedByUserName, e => e.MapFrom(o => o.CreatedByUser.Username));
 
             CreateMap<Stock, ProductStockDTO>()
                 .ForMember(dto => dto.CreatedByUserId, e => e.MapFrom(s => s.CreatedByUser.Id))

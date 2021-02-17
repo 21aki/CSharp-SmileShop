@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SmileShop.Controllers
 {
-    [Route("api/Products")]
+    [Route("api/products")]
     [ApiController]
     public class StockController : ControllerBase
     {
@@ -23,7 +23,7 @@ namespace SmileShop.Controllers
 
         [Route("{id}/stock/records")]
         [HttpGet]
-        public async Task<IActionResult> getStockHistory(int id, [FromQuery] PaginationDto pagination)
+        public async Task<IActionResult> GetStockHistory(int id, [FromQuery] PaginationDto pagination)
         {
             string errorMessage;
             try
@@ -41,7 +41,7 @@ namespace SmileShop.Controllers
 
         [Route("{id}/stock")]
         [HttpGet]
-        public async Task<IActionResult> get(int id)
+        public async Task<IActionResult> Get(int id)
         {
 
             string errorMessage;
@@ -60,7 +60,7 @@ namespace SmileShop.Controllers
 
         [Route("{id}/stock")]
         [HttpPost]
-        public async Task<IActionResult> set(int id, [FromBody] ProductStockAddDTO stockChanges)
+        public async Task<IActionResult> Set(int id, [FromBody] ProductStockAddDTO stockChanges)
         {
             string errorMessage;
             try

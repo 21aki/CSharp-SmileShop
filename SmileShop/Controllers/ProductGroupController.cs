@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace SmileShop.Controllers
 {
 
-    [Route("api/Products")]
+    [Route("api/products")]
     [ApiController]
     public class ProductGroupController : ControllerBase
     {

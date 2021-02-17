@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmileShop.Models;
-using System;
-using System.Collections.Generic;
 
 namespace SmileShop.Data
 {
@@ -22,6 +20,7 @@ namespace SmileShop.Data
             {
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.Orders)
+                    .IsRequired(false)
                     .HasForeignKey(d => d.CreatedByUserId)
                     .HasConstraintName("FK_Order_User");
             });
@@ -55,6 +54,7 @@ namespace SmileShop.Data
 
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.Products)
+                    .IsRequired(false)
                     .HasForeignKey(d => d.CreatedByUserId)
                     .HasConstraintName("FK_Product_User");
             });
@@ -64,6 +64,7 @@ namespace SmileShop.Data
 
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.ProductGroups)
+                    .IsRequired(false)
                     .HasForeignKey(d => d.CreatedByUserId)
                     .HasConstraintName("FK_ProductGroup_User");
             });
@@ -82,6 +83,7 @@ namespace SmileShop.Data
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.Stock)
                     .HasForeignKey(d => d.CreatedByUserId)
+                    .IsRequired(false)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Stock_User");
 

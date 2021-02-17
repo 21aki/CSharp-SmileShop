@@ -36,7 +36,7 @@ namespace SmileShop.Services
             // Ordering
             if (!(ordering is null))
             {
-                var columns = new List<string> { "Id","GroupId","Name","Price","CreatedBy","Status" };
+                var columns = new List<string> { "Id", "GroupId", "Name", "Price", "CreatedBy", "Status" };
 
                 if (columns.Exists(x => x == ordering.OrderBy))
                 {
@@ -101,7 +101,7 @@ namespace SmileShop.Services
 
             var productGroup = await _dbContext.ProductGroup.FindAsync(addProduct.GroupId);
 
-            if(productGroup is null)
+            if (productGroup is null)
                 throw new InvalidOperationException("Product Group is not Exist");
 
             // Add Products

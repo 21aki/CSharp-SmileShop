@@ -1,8 +1,6 @@
 ﻿using SmileShop.DTOs;
 using SmileShop.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SmileShop.Services
@@ -54,5 +52,5 @@ namespace SmileShop.Services
         /// To delete individual GroupProduct
         /// </summary>
         Task<ServiceResponse<ProductGroupDTO>> Delete(int productGroupId);
-}
+    }
 }

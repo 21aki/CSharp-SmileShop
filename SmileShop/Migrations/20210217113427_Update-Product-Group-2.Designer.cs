@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmileShop.Data;
 
 namespace SmileShop.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20210217113427_Update-Product-Group-2")]
+    partial class UpdateProductGroup2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -238,7 +240,9 @@ namespace SmileShop.Migrations
                     b.HasOne("SmileShop.Models.User", "CreatedByUser")
                         .WithMany("Orders")
                         .HasForeignKey("CreatedByUserId")
-                        .HasConstraintName("FK_Order_User");
+                        .HasConstraintName("FK_Order_User")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("SmileShop.Models.OrderDetail", b =>
@@ -263,7 +267,9 @@ namespace SmileShop.Migrations
                     b.HasOne("SmileShop.Models.User", "CreatedByUser")
                         .WithMany("Products")
                         .HasForeignKey("CreatedByUserId")
-                        .HasConstraintName("FK_Product_User");
+                        .HasConstraintName("FK_Product_User")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("SmileShop.Models.ProductGroup", "Group")
                         .WithMany("Products")
@@ -285,7 +291,8 @@ namespace SmileShop.Migrations
                     b.HasOne("SmileShop.Models.User", "CreatedByUser")
                         .WithMany("Stock")
                         .HasForeignKey("CreatedByUserId")
-                        .HasConstraintName("FK_Stock_User");
+                        .HasConstraintName("FK_Stock_User")
+                        .IsRequired();
 
                     b.HasOne("SmileShop.Models.Product", "Product")
                         .WithMany("Stock")

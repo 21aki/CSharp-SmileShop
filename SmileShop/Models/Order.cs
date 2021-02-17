@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SmileShop.Models
 {
@@ -12,7 +10,7 @@ namespace SmileShop.Models
         {
             OrderDetails = new HashSet<OrderDetail>();
         }
-        
+
         [Key]
         public int Id { get; set; }
 
@@ -32,7 +30,7 @@ namespace SmileShop.Models
         public decimal Net { get; set; }
 
         [Required]
-        public Guid? CreatedByUserId { get; set; }
+        public Guid CreatedByUserId { get; set; }
 
         public virtual User CreatedByUser { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }

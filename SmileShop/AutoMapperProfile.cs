@@ -1,11 +1,6 @@
 ﻿using AutoMapper;
 using SmileShop.DTOs;
 using SmileShop.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmileShop
 {

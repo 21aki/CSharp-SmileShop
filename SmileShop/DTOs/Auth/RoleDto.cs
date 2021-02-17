@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SmileShop.DTOs
+﻿namespace SmileShop.DTOs
 {
     public class RoleDto
     {

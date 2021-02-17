@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SmileShop.Models
 {
@@ -15,7 +13,7 @@ namespace SmileShop.Models
         }
 
         [Key]
-        [Range(1,999999)]
+        [Range(1, 999999)]
         public int Id { get; set; }
 
         [Reqired]
@@ -34,16 +32,16 @@ namespace SmileShop.Models
         public int StockCount { get; set; }
 
         [Reqired]
-        public Guid? CreatedByUserId { get; set; }
+        public Guid CreatedByUserId { get; set; }
 
         [Reqired]
         public DateTime CreatedDate { get; set; }
-        
+
         [Reqired]
         public bool? Status { get; set; }
 
         public virtual ProductGroup Group { get; set; }
-        public virtual User? CreatedByUser { get; set; }
+        public virtual User CreatedByUser { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
         public virtual ICollection<Stock> Stock { get; set; }
 

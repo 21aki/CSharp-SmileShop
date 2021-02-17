@@ -153,7 +153,7 @@ namespace SmileShop.Services
                 decimal price = 0;
 
                 (balance, price) = await _stockServices.ProductIsSufficient(listOrderDetail[i].ProductId, new ProductStockAddDTO { Debit = 0, Credit = listOrderDetail[i].Quantity });
-                
+
                 listOrderDetail[i].Price = price;
                 listOrderDetail[i].DiscountPrice = price * addOrder.Discount;
                 orderTotal += listOrderDetail[i].Quantity * price;
@@ -194,7 +194,7 @@ namespace SmileShop.Services
             // Add User Details
             dto.CreatedByUserName = GetUsername();
 
-            return ResponseResult.Success<OrderDTO>(dto,$"/api/orders/{newOrder.Id}/detail");
+            return ResponseResult.Success<OrderDTO>(dto, $"/api/orders/{newOrder.Id}/detail");
 
         }
 

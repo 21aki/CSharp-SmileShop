@@ -9,8 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace SmileShop.Services
@@ -42,7 +40,6 @@ namespace SmileShop.Services
         {
             // Quering data
             var query = _dbContext.ProductGroup.AsQueryable();
-
 
             // Filtering data
             if (!(String.IsNullOrEmpty(productGroupfilter)))
@@ -76,7 +73,8 @@ namespace SmileShop.Services
             var paginationResult = await _httpContext.HttpContext.InsertPaginationParametersInResponse(query, pagination.RecordsPerPage, pagination.Page);
 
             // Generate result
-            var result = await query.Paginate(pagination).Include(_=>_.CreatedByUser).ToListAsync();
+            var result = await query.Paginate(pagination).Include(_ => _.CreatedByUser).ToListAsync();
+            //await query.Paginate(pagination).Include(_=>_.CreatedByUser).DefaultIfEmpty().ToListAsync();
 
             // Return error if count is 0
             if (result.Count == 0)
@@ -228,10 +226,10 @@ namespace SmileShop.Services
             return ResponseResult.Success<ProductGroupDTO>(dto, $"Product Group ({data.Name}) have been deleted successfully");
         }
 
-        public  void Validate(ProductGroupAddDTO productGroup)
+        public void Validate(ProductGroupAddDTO productGroup)
         {
             if (String.IsNullOrWhiteSpace(productGroup.Name))
-                throw new ArgumentNullException("Name","Please fill Product Group's Name");
+                throw new ArgumentNullException("Name", "Please fill Product Group's Name");
         }
     }
 }

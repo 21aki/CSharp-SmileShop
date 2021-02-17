@@ -23,6 +23,10 @@
     <Compile Remove="Migrations\20210214035547_Data-Annotation.Designer.cs" />
     <Compile Remove="Migrations\20210217062533_Change-order-detail.cs" />
     <Compile Remove="Migrations\20210217062533_Change-order-detail.Designer.cs" />
+    <Compile Remove="Migrations\20210217115107_Update-CreatedBy-to-Required.cs" />
+    <Compile Remove="Migrations\20210217115107_Update-CreatedBy-to-Required.Designer.cs" />
+    <Compile Remove="Migrations\20210217122128_Update-CreatedBy-to-Required.cs" />
+    <Compile Remove="Migrations\20210217122128_Update-CreatedBy-to-Required.Designer.cs" />
   </ItemGroup>
 
   <!--<PropertyGroup>

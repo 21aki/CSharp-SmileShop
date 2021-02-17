@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SmileShop.Models
 {
@@ -25,19 +22,21 @@ namespace SmileShop.Models
 
         public int StockBefore { get; set; }
 
-        public virtual int StockAfter {
-            get {
+        public virtual int StockAfter
+        {
+            get
+            {
                 return this.StockBefore + Debit - Credit;
             }
         }
-        
+
 
         //public decimal Price { get; set; }
 
         public string Remark { get; set; }
 
         [Required]
-        public Guid? CreatedByUserId { get; set; }
+        public Guid CreatedByUserId { get; set; }
 
         public virtual Product Product { get; set; }
 

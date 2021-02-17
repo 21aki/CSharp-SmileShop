@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SmileShop.Models
 {
@@ -14,7 +12,7 @@ namespace SmileShop.Models
         }
 
         [Key]
-        [Range(1,999999)]
+        [Range(1, 999999)]
         public int Id { get; set; }
 
         [Required]
@@ -23,12 +21,12 @@ namespace SmileShop.Models
         public string Name { get; set; }
 
         [Reqired]
-        public Guid? CreatedByUserId { get; set; }
+        public Guid CreatedByUserId { get; set; }
         public DateTime CreatedDate { get; set; }
         public bool Status { get; set; }
 
         [Reqired]
-        public User? CreatedByUser { get; set; }
+        public User CreatedByUser { get; set; }
         public virtual ICollection<Product> Products { get; set; }
     }
 }

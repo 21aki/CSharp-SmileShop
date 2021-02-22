@@ -97,7 +97,9 @@ namespace SmileShop
 
             //------SmileShop------
             services.AddScoped<IProductGroupServices, ProductGroupServices>();
-            services.AddScoped<IProductServices, ProductServices>();
+
+            services.AddScoped<IProductServices, ProductServicesThrowResult>();
+            //services.AddScoped<IProductServices, ProductServices>();
             services.AddScoped<IOrderServices, OrderServices>();
             services.AddScoped<IStockServices, StockServices>();
             //------End: Service------
@@ -111,7 +113,13 @@ namespace SmileShop
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                //app.UseDeveloperExceptionPage();
+
+                app.UseExceptionHandler("/api/error-development");
+            }
+            else
+            {
+                app.UseExceptionHandler("/api/error");
             }
 
             //------Swagger------

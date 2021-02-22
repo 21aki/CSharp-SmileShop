@@ -5,8 +5,6 @@ using Newtonsoft.Json;
 using SmileShop.DTOs;
 using SmileShop.Models;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SmileShop.Test.IntegratedTest
@@ -95,11 +93,11 @@ namespace SmileShop.Test.IntegratedTest
             // ===== Arrange =====
 
             var dbName = Guid.NewGuid().ToString();
-             var context = BuildContext(dbName);
-             var mapper = BuildMap();
-             var httpContext = new Mock<IHttpContextAccessor>();
-             var http = new DefaultHttpContext();
-             httpContext.Setup(_ => _.HttpContext).Returns(http);
+            var context = BuildContext(dbName);
+            var mapper = BuildMap();
+            var httpContext = new Mock<IHttpContextAccessor>();
+            var http = new DefaultHttpContext();
+            httpContext.Setup(_ => _.HttpContext).Returns(http);
 
             await Generate_Stock_Data(context, mapper, httpContext.Object);
             var data = await context.Product.FindAsync(7);

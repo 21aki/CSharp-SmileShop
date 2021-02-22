@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using Newtonsoft.Json;
 using SmileShop.Data;
 using SmileShop.DTOs;
@@ -20,6 +22,7 @@ namespace SmileShop.Test
 {
     public class TestBase
     {
+
         /// <summary>
         /// Create new dbContext for each test.
         /// </summary>
@@ -27,8 +30,20 @@ namespace SmileShop.Test
         /// <returns>Project's DBContext</returns>
         protected AppDBContext BuildContext(string dbName)
         {
+            var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder
+                .AddConsole((options) => { })
+                .AddFilter((category, level) =>
+                    category == DbLoggerCategory.Database.Command.Name
+                    && level == LogLevel.Information);
+            });
+
             var options = new DbContextOptionsBuilder<AppDBContext>()
+                .UseLoggerFactory(loggerFactory)  //tie-up DbContext with LoggerFactory object
+                .EnableSensitiveDataLogging()
                 .UseInMemoryDatabase(dbName).Options;
+            
 
             var dbContext = new AppDBContext(options);
             return dbContext;
@@ -94,7 +109,7 @@ namespace SmileShop.Test
 
             // Stand in Product
             var product = new List<Product> {
-                new Product {Id = 1, GroupId = 1, Name = "Test Product 1 Group A", Price = 10, StockCount = 40, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
+                new Product {Id = 1, GroupId =  1, Name = "Test Product 1 Group A", Price = 10, StockCount = 40, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
                 new Product {Id = 2, GroupId = 1, Name = "Test Product 2 Group A", Price = 20, StockCount = 20, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
                 new Product {Id = 3, GroupId = 1, Name = "Test Product 3 Group A", Price = 30, StockCount = 10, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
                 new Product {Id = 4, GroupId = 2, Name = "Test Product 1 Group B", Price = 20, StockCount = 20, CreatedDate = DateTime.Now, Status = true, CreatedByUserId = user.Id},
@@ -144,7 +159,7 @@ namespace SmileShop.Test
                 new Stock {Id = 18,ProductId = 5, Debit = 5, Credit = 0, StockBefore = 20, Remark = "Stock Set", CreatedByUserId = user.Id, CreatedDate = DateTime.Now},
                 new Stock {Id = 19,ProductId = 10, Debit = 0, Credit = 20, StockBefore = 20, Remark = "Stock Set", CreatedByUserId = user.Id, CreatedDate = DateTime.Now},
                 new Stock {Id = 20,ProductId = 15, Debit = 10, Credit = 0, StockBefore = 20, Remark = "Stock Set", CreatedByUserId = user.Id, CreatedDate = DateTime.Now},
-                
+
             };
 
             // Add Product Group
@@ -153,16 +168,110 @@ namespace SmileShop.Test
 
             return user;
         }
+        public async Task<User> Generate_Order_Data(AppDBContext context, IMapper mapper, IHttpContextAccessor http)
+        {
+            var user = await Generate_Stock_Data(context, mapper, http);
+
+            // Stand in Stock
+            var order = new List<Order>
+            {
+                new Order {
+                    Id = 1,
+                    CreatedByUserId = user.Id,
+                    CreatedDate = DateTime.Now,
+                    Discount = 0,
+                    Net = 30,
+                    Total = 30,
+                    OrderDetails = new List<OrderDetail> {
+                        new OrderDetail {
+                            OrderId = 1,
+                            ProductId = 1,
+                            Price = 10,
+                            DiscountPrice = 0,
+                            Quantity = 1
+                        },
+                        new OrderDetail {
+                            OrderId = 1,
+                            ProductId = 2,
+                            Price = 20,
+                            DiscountPrice = 0,
+                            Quantity = 1
+                        },
+                    },
+                    ItemCount = 2
+                },
+
+                new Order {
+                    Id = 2,
+                    CreatedByUserId = user.Id,
+                    CreatedDate = DateTime.Now,
+                    Discount = 0,
+                    Net = 50,
+                    Total = 50,
+                    OrderDetails = new List<OrderDetail> {
+                        new OrderDetail {
+                            OrderId = 2,
+                            ProductId = 3,
+                            Price = 30,
+                            DiscountPrice = 0,
+                            Quantity = 1
+                        },
+                        new OrderDetail {
+                            OrderId = 2,
+                            ProductId = 4,
+                            Price = 20,
+                            DiscountPrice = 0,
+                            Quantity = 1
+                        },
+                    },
+                    ItemCount = 2
+                },
+
+                new Order {
+                    Id = 3,
+                    CreatedByUserId = user.Id,
+                    CreatedDate = DateTime.Now,
+                    Discount = 0,
+                    Net = 70,
+                    Total = 70,
+                    OrderDetails = new List<OrderDetail> {
+                        new OrderDetail {
+                            OrderId = 3,
+                            ProductId = 5,
+                            Price = 30,
+                            DiscountPrice = 0,
+                            Quantity = 1
+                        },
+                        new OrderDetail {
+                            OrderId = 3,
+                            ProductId = 6,
+                            Price = 40,
+                            DiscountPrice = 0,
+                            Quantity = 1
+                        },
+                    },
+                    ItemCount = 2
+                }
+            };
+
+            // Add Product Group
+            await context.AddRangeAsync(order);
+            await context.SaveChangesAsync();
+
+            return user;
+        }
 
 
         protected WebApplicationFactory<Startup> BuildWebApplicationFactory(string databaseName)
         {
+
             var factory = new WebApplicationFactory<Startup>();
 
             factory = factory.WithWebHostBuilder(builder =>
             {
                 builder.ConfigureTestServices(services =>
                 {
+                    
                     var descriptorDbContext = services.SingleOrDefault(d =>
                     d.ServiceType == typeof(DbContextOptions<AppDBContext>));
 
@@ -176,6 +285,7 @@ namespace SmileShop.Test
                     {
                         options.UseInMemoryDatabase(databaseName);
                     });
+
                 });
             });
 

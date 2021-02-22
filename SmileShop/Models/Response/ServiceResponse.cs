@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmileShop.Exceptions;
+using System;
 
 namespace SmileShop.Models
 {
@@ -11,8 +12,10 @@ namespace SmileShop.Models
         public DateTime ServerDateTime { get; set; } = DateTime.Now;
     }
 
+
     public static class ResponseResult
     {
+
         public static ServiceResponse<T> Success<T>(T data, string message = "")
         {
             return new ServiceResponse<T>
@@ -38,6 +41,18 @@ namespace SmileShop.Models
                 IsSuccess = false,
                 Message = message
             };
+        }
+
+        public static ServiceResponse<T> Failure<T>(string message, ResponseType responseType) where T : class
+        {
+            throw new ApiException(message, responseType);
+
+            //return new ServiceResponse<T>
+            //{
+            //    Data = null,
+            //    IsSuccess = false,
+            //    Message = message
+            //};
         }
     }
 }

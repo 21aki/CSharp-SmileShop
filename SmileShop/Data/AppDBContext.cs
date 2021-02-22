@@ -64,7 +64,7 @@ namespace SmileShop.Data
 
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.ProductGroups)
-                    .IsRequired(false)
+                    //.IsRequired(false)
                     .HasForeignKey(d => d.CreatedByUserId)
                     .HasConstraintName("FK_ProductGroup_User");
             });

@@ -4,12 +4,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
 using SmileShop.DTOs;
+using SmileShop.Exceptions;
 using SmileShop.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SmileShop.Test.IntegratedTest
@@ -41,7 +41,8 @@ namespace SmileShop.Test.IntegratedTest
             var response = await client.GetAsync(url);
 
             // ===== Assert =====
-            response.EnsureSuccessStatusCode();
+
+            Assert.AreEqual((int)ResponseType.NoContent, (int)response.StatusCode); //response.EnsureSuccessStatusCode();
             var product = JsonConvert.DeserializeObject<ServiceResponseWithPagination<ProductDTO>>(await response.Content.ReadAsStringAsync());
             Assert.IsNull(product.Data);
             Assert.IsTrue(product.Message.Contains("Product is not Exist"));
@@ -152,7 +153,8 @@ namespace SmileShop.Test.IntegratedTest
         // GetAll_WithOrder_ReturnOrderedData
         [TestMethod]
         [TestCategory("GetAll")]
-        public async Task GetAll_WithOrder_ReturnOrderedData() {
+        public async Task GetAll_WithOrder_ReturnOrderedData()
+        {
 
             // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
@@ -209,7 +211,8 @@ namespace SmileShop.Test.IntegratedTest
             var response = await client.GetAsync(url);
 
             // ===== Assert =====
-            response.EnsureSuccessStatusCode();
+
+            Assert.AreEqual((int)ResponseType.BadRequest, (int)response.StatusCode); //response.EnsureSuccessStatusCode();
             var result = JsonConvert.DeserializeObject<ServiceResponse<ProductDTO>>(await response.Content.ReadAsStringAsync());
 
             Assert.IsFalse(result.IsSuccess);
@@ -238,7 +241,8 @@ namespace SmileShop.Test.IntegratedTest
             var response = await client.GetAsync(url);
 
             // ===== Assert =====
-            response.EnsureSuccessStatusCode();
+
+            Assert.AreEqual((int)ResponseType.NoContent, (int)response.StatusCode); //response.EnsureSuccessStatusCode();
             var result = JsonConvert.DeserializeObject<ServiceResponse<ProductDTO>>(await response.Content.ReadAsStringAsync());
 
             Assert.IsFalse(result.IsSuccess);
@@ -303,7 +307,8 @@ namespace SmileShop.Test.IntegratedTest
         [TestCategory("Add")]
         [DataRow(1, "New Product", "20")]
         [DataRow(2, "New Product", "20")]
-        public async Task Add_NoUser_ReturnError(int gid, string n, string pf) {
+        public async Task Add_NoUser_ReturnError(int gid, string n, string pf)
+        {
 
             // ===== Arrange =====
             var dbName = Guid.NewGuid().ToString();
@@ -335,7 +340,7 @@ namespace SmileShop.Test.IntegratedTest
             var response = await client.PostAsync(url, httpContent);
 
             // ===== Assert =====
-            response.EnsureSuccessStatusCode();
+            Assert.AreEqual((int)ResponseType.Unauthorized, (int)response.StatusCode);
             var result = JsonConvert.DeserializeObject<ServiceResponse<ProductDTO>>(await response.Content.ReadAsStringAsync());
 
             Assert.IsFalse(result.IsSuccess);
@@ -386,8 +391,9 @@ namespace SmileShop.Test.IntegratedTest
             var response = await client.PostAsync(url, httpContent);
 
             // ===== Assert =====
-            response.EnsureSuccessStatusCode();
-            var result = JsonConvert.DeserializeObject<ServiceResponse<ProductDTO>>(await response.Content.ReadAsStringAsync());
+            //Console.WriteLine(await response.Content.ReadAsStringAsync());
+            Assert.AreEqual((int)ResponseType.BadRequest, (int)response.StatusCode);
+            var result = JsonConvert.DeserializeObject<ServiceResponse<string>>(await response.Content.ReadAsStringAsync());
 
             Assert.IsFalse(result.IsSuccess);
             Assert.IsTrue(result.Message.Contains("Product Group is not Exist"));
@@ -492,7 +498,8 @@ namespace SmileShop.Test.IntegratedTest
             var response = await client.PutAsync(url, httpContent);
 
             // ===== Assert =====
-            response.EnsureSuccessStatusCode();
+
+            Assert.AreEqual((int)ResponseType.BadRequest, (int)response.StatusCode); //response.EnsureSuccessStatusCode();
             var result = JsonConvert.DeserializeObject<ServiceResponse<ProductDTO>>(await response.Content.ReadAsStringAsync());
 
             Assert.IsFalse(result.IsSuccess);
@@ -545,11 +552,12 @@ namespace SmileShop.Test.IntegratedTest
             var response = await client.PutAsync(url, httpContent);
 
             // ===== Assert =====
-            response.EnsureSuccessStatusCode();
-            var result = JsonConvert.DeserializeObject<ServiceResponse<ProductDTO>>(await response.Content.ReadAsStringAsync());
 
-            Assert.IsFalse(result.IsSuccess);
-            Assert.IsNotNull(result.Message);
+            Assert.AreNotEqual( 200 , (int)response.StatusCode); //response.EnsureSuccessStatusCode();
+            //var result = JsonConvert.DeserializeObject<ServiceResponse<ProductDTO>>(await response.Content.ReadAsStringAsync());
+
+            //Assert.IsFalse(result.IsSuccess);
+            //Assert.IsNotNull(result.Message);
 
             var assContext = BuildContext(dbName);
 
@@ -671,14 +679,17 @@ namespace SmileShop.Test.IntegratedTest
             var response = await client.DeleteAsync(url);
 
             // ===== Assert =====
-            response.EnsureSuccessStatusCode();
+
+            if (id <= 0)
+                Assert.AreEqual((int)ResponseType.BadRequest, (int)response.StatusCode);
+            else
+                Assert.AreEqual((int)ResponseType.NoContent, (int)response.StatusCode);
+
+
             var result = JsonConvert.DeserializeObject<ServiceResponse<ProductDTO>>(await response.Content.ReadAsStringAsync());
 
-            Assert.IsFalse(result.IsSuccess);
 
-            if(id > 0)
-                Assert.IsTrue(result.Message.Contains("Product is not Exist"));
-            else
+            if (id <= 0)
                 Assert.IsTrue(result.Message.Contains("Id must be greater than 0"));
         }
 

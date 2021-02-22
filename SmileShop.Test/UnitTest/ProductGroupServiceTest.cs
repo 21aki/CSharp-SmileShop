@@ -1,9 +1,7 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using SmileShop.Data;
 using SmileShop.DTOs;
 using SmileShop.Models;
 using SmileShop.Services;
@@ -56,13 +54,15 @@ namespace SmileShop.Test.UnitTest
             long startTicks = Stopwatch.GetTimestamp();
             try
             {
-            var service = new ProductGroupServices(context, mapper, httpContext.Object);
-            var result = await service.GetAll(pagination, filter, order);
+                var service = new ProductGroupServices(context, mapper, httpContext.Object);
+                var result = await service.GetAll(pagination, filter, order);
 
-            } catch (InvalidOperationException)
+            }
+            catch (InvalidOperationException)
             {
                 expectEx = true;
-            } catch (Exception)
+            }
+            catch (Exception)
             {
                 throw;
             }

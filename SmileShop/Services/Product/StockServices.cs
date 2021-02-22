@@ -8,6 +8,7 @@ using SmileShop.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 
 namespace SmileShop.Services
@@ -172,6 +173,21 @@ namespace SmileShop.Services
             return ResponseResult.Success<ProductStockDTO>(dto, $"Product ({product.Name}) stock are update successfully");
         }
 
+        public class Balance
+        {
+
+            public int Debit { get; set; } = 0;
+            public int Credit { get; set; } = 0;
+            public int Calculate
+            {
+                get
+                {
+                    return this.Debit - this.Credit;
+                }
+            }
+
+        }
+
         //TaskProductIsSufficient(int productId, int amount)
         public async Task<(int balance, decimal price)> ProductIsSufficient(int productId, ProductStockAddDTO stockChanges)
         {
@@ -182,9 +198,7 @@ namespace SmileShop.Services
             //return ResponseResultWithPagination.Failure<List<ProductStockDTO>>("Id must be greater than 0");
 
 
-            var product = await _dbContext.Product
-                                          .Where(_ => _.Id == productId)
-                                          .FirstOrDefaultAsync();
+            var product = await _dbContext.Product.FindAsync(productId);
 
             if (product is null)
                 throw new InvalidOperationException("Product is not Exist");
@@ -199,11 +213,22 @@ namespace SmileShop.Services
                                          .Where(_ => _.ProductId == productId)
                                          .SumAsync(_ => _.Credit);
 
+            /*var data = _dbContext.Product.Where(_ => _.Id == productId).Select(_ => new Balance
+            {
+                Debit = _.Stock.Select(s => s.Debit).Sum(),
+                Credit = _.Stock.Select(c => c.Credit).Sum()
+            }).FirstOrDefault();
+
+
+            //await _dbContext.Stock.SelectMany(_ => new Balance(_.Debit,_c)).SumAsync();
+
+            var balance = data.Debit - data.Credit;*/
+
             var balance = debit - credit;
 
             // Stock can't be less than 0
             if (stockChanges.Credit > 0 && (balance - stockChanges.Credit) < 0)
-                throw new ArithmeticException("Stock can't be less than 0");
+                throw new ArithmeticException($"{product.Name} Stock can't be less than 0");
 
             return (balance, product.Price);
         }

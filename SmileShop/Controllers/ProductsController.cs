@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SmileShop.DTOs;
-using SmileShop.Models;
 using SmileShop.Services;
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SmileShop.Controllers
@@ -23,71 +20,36 @@ namespace SmileShop.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] PaginationDto pagination = null, [FromQuery] ProductFilterDTO filter = null, [FromQuery] DataOrderDTO ordering = null)
         {
-            try
-            {
-                var paginationResult = await _Service.GetAll(pagination, filter, ordering);
-                return Ok(paginationResult);
-            }
-            catch (Exception ex)
-            {
-                return Ok(ResponseResultWithPagination.Failure<List<ProductDTO>>(ex.Message));
-            }
+            var paginationResult = await _Service.GetAll(pagination, filter, ordering);
+            return Ok(paginationResult);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            try
-            {
-                var result = await _Service.Get(id);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return Ok(ResponseResult.Failure<ProductDTO>(ex.Message));
-            }
+            var result = await _Service.Get(id);
+            return Ok(result);
         }
 
         [HttpPost]
         public async Task<IActionResult> Add(ProductAddDTO addProduct)
         {
-            try
-            {
-                var result = await _Service.Add(addProduct);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return Ok(ResponseResult.Failure<ProductDTO>(ex.Message));
-            }
+            var result = await _Service.Add(addProduct);
+            return Ok(result);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Edit(int id, ProductAddDTO editProduct)
         {
-            try
-            {
-                var result = await _Service.Edit(id, editProduct);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return Ok(ResponseResult.Failure<ProductDTO>(ex.Message));
-            }
+            var result = await _Service.Edit(id, editProduct);
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            try
-            {
-                var result = await _Service.Delete(id);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return Ok(ResponseResult.Failure<ProductDTO>(ex.Message));
-            }
+            var result = await _Service.Delete(id);
+            return Ok(result);
         }
     }
 }

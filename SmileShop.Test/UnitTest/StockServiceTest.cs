@@ -86,7 +86,7 @@ namespace SmileShop.Test.UnitTest
             httpContext.Setup(_ => _.HttpContext).Returns(http);
 
             await Generate_Stock_Data(context, mapper, httpContext.Object);
-            var data =  await context.Product.FindAsync(7);
+            var data = await context.Product.FindAsync(7);
 
             // ===== Act =====
             var actContext = BuildContext(dbName);
@@ -197,7 +197,7 @@ namespace SmileShop.Test.UnitTest
 
             // ===== Assert =====
             Assert.IsTrue(result.IsSuccess);
-            Assert.AreEqual(0,result.Data.Count);
+            Assert.AreEqual(0, result.Data.Count);
             Assert.AreEqual($"Product ({data.Name}) have no recent stock records", result.Message);
         }
 
@@ -235,8 +235,8 @@ namespace SmileShop.Test.UnitTest
         #region Set
         // Set_NoUserPresented_ReturnError // UnauthorizedAccessException
         [DataTestMethod]
-        [DataRow(1, 5, 0 , "Test")]
-        [DataRow(5, 0, 5 , "Test")]
+        [DataRow(1, 5, 0, "Test")]
+        [DataRow(5, 0, 5, "Test")]
         [ExpectedException(typeof(UnauthorizedAccessException))]
         public async Task Set_NoUserPresented_ReturnError(int id, int debit, int credit, string remark)
         {
@@ -250,7 +250,7 @@ namespace SmileShop.Test.UnitTest
 
             // ===== Act =====
             var service = new StockServices(context, mapper, httpContext.Object);
-            await service.Set(id, new ProductStockAddDTO {Debit = debit, Credit = credit, Remark = remark });
+            await service.Set(id, new ProductStockAddDTO { Debit = debit, Credit = credit, Remark = remark });
 
             // ===== Assert =====
             // Expected Exception
@@ -423,7 +423,7 @@ namespace SmileShop.Test.UnitTest
             var http = new DefaultHttpContext();
             httpContext.Setup(_ => _.HttpContext).Returns(http);
 
-            var user = await SetupUser(context, mapper, httpContext.Object, new UserRegisterDto { Password="test", Username = "test" });
+            var user = await SetupUser(context, mapper, httpContext.Object, new UserRegisterDto { Password = "test", Username = "test" });
 
             List<Claim> claims = new List<Claim>
             {
@@ -541,7 +541,7 @@ namespace SmileShop.Test.UnitTest
             var assCount = await assContext.Stock.CountAsync();
             var assStock = await assContext.Stock.LastAsync();
 
-            Assert.AreEqual(count +1 , assCount);
+            Assert.AreEqual(count + 1, assCount);
             Assert.AreEqual(id, assStock.ProductId);
             Assert.AreEqual(debit, assStock.Debit);
             Assert.AreEqual(credit, assStock.Credit);

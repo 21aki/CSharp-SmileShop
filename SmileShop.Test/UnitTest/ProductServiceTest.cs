@@ -1,9 +1,7 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using SmileShop.Data;
 using SmileShop.DTOs;
 using SmileShop.Models;
 using SmileShop.Services;
@@ -28,6 +26,15 @@ namespace SmileShop.Test.UnitTest
     [TestClass]
     public class ProductServiceTest : TestBase
     {
+
+        //public IProductServices _services;
+
+        //public ProductServiceTest()
+        //{
+        //    _services = ProductServices;
+        //}
+
+
         // GetAll_NoData_ReturnError // InvalidOperationException
         [TestMethod]
         [TestCategory("GetAll")]

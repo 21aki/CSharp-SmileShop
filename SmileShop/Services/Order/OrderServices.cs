@@ -158,6 +158,9 @@ namespace SmileShop.Services
                 listOrderDetail[i].DiscountPrice = price * addOrder.Discount;
                 orderTotal += listOrderDetail[i].Quantity * price;
 
+                var stock = new Stock { ProductId = listOrderDetail[i].ProductId, Debit = 0, Credit = listOrderDetail[i].Quantity, CreatedByUserId = Guid.Parse(GetUserId()), CreatedDate = Now(), Remark = $"Deduct from Order", StockBefore = balance };
+
+                await _dbContext.AddAsync(stock);
             }
             orderQuantity = listOrderDetail.Sum(_ => _.Quantity);
             orderNet = orderTotal - listOrderDetail.Sum(_ => _.DiscountPrice);
@@ -170,20 +173,9 @@ namespace SmileShop.Services
             newOrder.Total = orderTotal;
             newOrder.ItemCount = orderQuantity;
             newOrder.Net = orderNet;
-
-            await _dbContext.Order.AddAsync(newOrder);
-            await _dbContext.SaveChangesAsync();
-
-            listOrderDetail.ForEach(_ => _.OrderId = newOrder.Id);
             newOrder.OrderDetails = _mapper.Map<List<OrderDetail>>(listOrderDetail);
 
-            _dbContext.Order.Update(newOrder);
-
-            // Record a stock
-            for (int i = 0; i < listOrderDetail.Count; i++)
-            {
-                await _stockServices.Set(listOrderDetail[i].ProductId, new ProductStockAddDTO { Debit = 0, Credit = listOrderDetail[i].Quantity, Remark = $"Deduct from Order ({newOrder.Id})" });
-            }
+            await _dbContext.Order.AddAsync(newOrder);
 
             // Save changes
             await _dbContext.SaveChangesAsync();

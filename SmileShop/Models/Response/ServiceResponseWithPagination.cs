@@ -1,4 +1,5 @@
 ﻿using SmileShop.DTOs;
+using SmileShop.Exceptions;
 
 namespace SmileShop.Models
 {
@@ -49,6 +50,19 @@ namespace SmileShop.Models
                 IsSuccess = false,
                 Message = message
             };
+        }
+
+
+        public static ServiceResponseWithPagination<T> Failure<T>(string message, ResponseType responseType) where T : class
+        {
+            throw new ApiException(message, responseType);
+
+            //return new ServiceResponse<T>
+            //{
+            //    Data = null,
+            //    IsSuccess = false,
+            //    Message = message
+            //};
         }
     }
 }

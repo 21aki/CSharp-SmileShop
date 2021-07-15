@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
+using SmileShop.Configurations;
 using SmileShop.Data;
 using SmileShop.Helpers;
 using SmileShop.Services;
@@ -43,7 +44,11 @@ namespace SmileShop
             {
                 options.RespectBrowserAcceptHeader = true;
             })
-            .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore)
+            .AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+            })
             .AddXmlSerializerFormatters();
 
 
@@ -79,6 +84,10 @@ namespace SmileShop
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             //------End: DBContext------
 
+            //------Options ------
+            services.Configure<SssCommonApiOptions>(Configuration.GetSection(SssCommonApiOptions.Section));
+            //--------------------
+
             //------Swagger------
             services.AddOData();
             //------End: Swagger------
@@ -90,6 +99,12 @@ namespace SmileShop
             //------Authentication------
             AddAuthentication(services);
             //------End: Authentication------
+
+            //------RestShape Client------
+            services.AddSingleton<SmileShop.Clients.ShortLinkClient>();
+            services.AddSingleton<SmileShop.Clients.SendSmsClient>();
+
+            //------End: RestShape Client------
 
             //------Service------
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -111,16 +126,16 @@ namespace SmileShop
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                //app.UseDeveloperExceptionPage();
+            //if (env.isdevelopment())
+            //{
+            //    //app.usedeveloperexceptionpage();
 
-                app.UseExceptionHandler("/api/error-development");
-            }
-            else
-            {
+            //    app.useexceptionhandler("/api/error-development");
+            //}
+            //else
+            //{
                 app.UseExceptionHandler("/api/error");
-            }
+            //}
 
             //------Swagger------
             app.UseSwagger();

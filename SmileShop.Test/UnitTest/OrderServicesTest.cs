@@ -64,24 +64,6 @@ namespace SmileShop.Test.UnitTest
             // Expect Exception
         }
 
-        ////[TestMethod]
-        ////[ExpectedException(typeof(InvalidOperationException))]
-        ////public async Task GetAll_IsNoData_ReturnError2()
-        ////{
-
-        ////    // ===== Arrange =====
-        ////    // No Needed
-
-
-        ////    Console.WriteLine(_dbname);
-
-        ////    // ===== Act ======
-        ////    var result = await GetAll_Test(new PaginationDto(), new OrderFilterDTO(), new DataOrderDTO());
-
-        ////    // ===== Assert ======
-        ////    // Expect Exception
-        ////}
-
         [TestMethod, TestCategory("Have data"), TestCategory("GetAll")]
         public async Task GetAll_HaveData_ReturnData()
         {

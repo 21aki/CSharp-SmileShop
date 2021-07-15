@@ -1,21 +1,21 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using SmileShop.Exceptions;
 using SmileShop.Models;
 using System;
+using System.Net;
+using System.Net.Http;
 
 namespace SmileShop.Controllers
 {
+    //[Route("/api")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     [ApiController]
     public class ErrorController : ControllerBase
     {
-
-        [HttpGet]
-        [HttpPost]
-        [HttpPut]
-        [HttpDelete]
-        [Route("api/error")]
+        [Route("/api/error")]
         public IActionResult Error()
         {
             var context = HttpContext.Features.Get<IExceptionHandlerFeature>();
@@ -53,8 +53,10 @@ namespace SmileShop.Controllers
             switch (exType.Name)
             {
                 case "SqlException":
-                    errorResult = ResponseResult.Failure<string>("Database Error");
-                    break;
+                    errorResult = ResponseResult.Failure<string>("DB Error");
+                    var result = new ObjectResult(errorResult) { StatusCode = 500 };
+                    return result;
+                    //break;
                 default:
                     errorResult = ResponseResult.Failure<string>("API Internal Error");
                     break;
@@ -76,12 +78,8 @@ namespace SmileShop.Controllers
         //[HttpDelete]
         //public IActionResult Delete() => RedirectToAction("Error");
 
-
-        [HttpGet]
-        [HttpPost]
-        [HttpPut]
-        [HttpDelete]
-        [Route("api/error-development")]
+        /*
+        [Route("/api/error-development")]
         public IActionResult ErrorLocalDevelopment(
             [FromServices] IWebHostEnvironment webHostEnvironment)
         {
@@ -129,6 +127,6 @@ namespace SmileShop.Controllers
                 detail: context.Error.StackTrace,
                 title: context.Error.Message);
         }
-
+        */
     }
 }
